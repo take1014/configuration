@@ -157,7 +157,6 @@ NeoBundle 'tomtom/tcomment_vim'
 " taglist
 NeoBundle 'vim-scripts/taglist.vim'
 NeoBundle 'szw/vim-tags'
-NeoBundle 'davidhalter/jedi-vim'
 call neobundle#end()
 
 " Required:

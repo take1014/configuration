@@ -1,0 +1,84 @@
+" neobundle.vimの初期化-------------------------------------------------
+:source $VIMRUNTIME/mswin.vim
+ " Note: Skip initialization for vim-tiny or vim-small.
+ if 0 | endif
+
+ if has('vim_starting')
+   if &compatible
+     set nocompatible
+   endif
+
+   " Required:
+   set runtimepath+=~/.vim/bundle/neobundle.vim/
+ endif
+
+ " Required:
+ call neobundle#begin(expand('~/.vim/bundle/'))
+
+ " NeoBundle 設定
+ " Required:
+ NeoBundleFetch 'Shougo/neobundle.vim'
+
+ " My Bundles here:
+ " Refer to |:NeoBundle-examples|.
+ " Note: neobundle の設定を.gvimrcに書かないこと！
+
+ " ここに追加したいプラグインを追加します。
+NeoBundle 'Shougo/neocomplcache.git'
+NeoBundle 'Shougo/unite.vim.git'
+NeoBundle 'Shougo/vimshell.git'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+NeoBundle 'rking/ag.vim'
+NeoBundle 'nanotech/jellybeans.vim'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'davidhalter/jedi-vim'
+
+ call neobundle#end()
+
+ " Required:
+ filetype plugin indent on
+
+ " If there are uninstalled bundles found on startup,
+ " this will conveniently prompt you to install them.
+ NeoBundleCheck
+
+" Ctrl+Vの挙動を変更
+nmap <C-v> <C-v>
+cmap <C-v> <C-v>
+
+" ctags
+set tags=.tags;$HOMEPATH
+
+function! s:execute_ctags() abort
+  " 探すタグファイル名
+  let tag_name = '.tags'
+  " ディレクトリを遡り、タグファイルを探し、パス取得
+  let tags_path = findfile(tag_name, '.;')
+  " タグファイルパスが見つからなかった場合
+  if tags_path ==# ''
+    return
+  endif
+
+  " タグファイルのディレクトリパスを取得
+  " `:p:h`の部分は、:h filename-modifiersで確認
+  let tags_dirpath = fnamemodify(tags_path, ':p:h')
+  " 見つかったタグファイルのディレクトリに移動して、ctagsをバックグラウンド実行（エラー出力破棄）
+  execute 'silent !cd' tags_dirpath '&& ctags -R -f' tag_name '2> /dev/null &'
+endfunction
+
+augroup ctags
+  autocmd!
+  autocmd BufWritePost * call s:execute_ctags()
+augroup END
+
+" taglist
+let Tlist_Auto_Highlight_Tag = 1
+let Tlist_Highlight_Tag_On_BufEnter = 1
+let Tlist_Auto_Update = 1
+let Tlist_Exit_OnlyWindow = 1
+let Tlist_Ctags_Cmd = '"C:\Program Files (x86)\ctags\ctags.exe"'
+let Tlist_Display_Prototype = 1
+let Tlist_Display_Tag_Scope = 1
+let Tlist_Show_One_File = 1
+let Tlist_Use_Right_Window = 1
+let Tlist_WinWidth = 40
