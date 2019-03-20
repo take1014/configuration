@@ -1,3 +1,6 @@
+"jedi-vimのプレビューウィンドウを消す
+set completeopt=menuone
+
 " neobundle.vimの初期化-------------------------------------------------
 :source $VIMRUNTIME/mswin.vim
  " Note: Skip initialization for vim-tiny or vim-small.
