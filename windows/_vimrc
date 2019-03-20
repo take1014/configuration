@@ -32,6 +32,7 @@ NeoBundle 'rking/ag.vim'
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'davidhalter/jedi-vim'
+NeoBundle 'vim-scripts/taglist.vim.git'
 
  call neobundle#end()
 
