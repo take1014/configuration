@@ -1,3 +1,6 @@
+"jedi-vimのプレビューウィンドウを消す
+set completeopt=menuone
+
 set nocompatible					"vim互換
 set clipboard=unnamed,autoselect   "クリップボードを共有
 
@@ -55,7 +58,7 @@ augroup HighlightTrailingSpaces
 augroup END
 
 " タブの可視化
-set listchars=tab:»-
+set listchars=tab:≫-
 
 "** タブ、インデントの設定 **
 set tabstop=4                       "タブ文字幅
