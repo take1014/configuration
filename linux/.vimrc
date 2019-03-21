@@ -26,10 +26,10 @@ set nowritebackup					"ファイル上書き時にバックアップを取らな
 set noswapfile                      "swpの作成無効化
 
 "** 半角文字の設定 **
-set guifont=Ricty_Regular:h12
+set guifont=Ricty\ 12
 
 "** 全角文字の設定 **
-set guifontwide=Ricty_Regular:h12
+set guifontwide=Ricty\ 12
 "g  オプション vimrc
 "** 文字コード設定 **
 set encoding=utf-8                  "エンコード設定
