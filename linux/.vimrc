@@ -42,6 +42,7 @@ set title                           "タイトル
 set number                          "行番号
 set ruler							"ルーラーの設定
 set nowrap							"折り返し設定
+highlight Comment ctermfg=green
 "** カラースキーマ設定 **
 set t_Co=256
 colorscheme jellybeans
