@@ -8,10 +8,10 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
 " Shift + 矢印でウィンドウサイズを変更
-nnoremap <S-h> <C-w>>
-nnoremap <S-j> <C-w><
+nnoremap <S-h> <C-w><
+nnoremap <S-j> <C-w>-
 nnoremap <S-k> <C-w>+
-nnoremap <S-l> <C-w>-
+nnoremap <S-l> <C-w>>
 
 set nocompatible					"vim互換
 set clipboard=unnamed,autoselect   "クリップボードを共有
