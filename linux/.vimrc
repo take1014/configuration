@@ -173,6 +173,7 @@ NeoBundle 'tomtom/tcomment_vim'
 " taglist
 NeoBundle 'vim-scripts/taglist.vim'
 NeoBundle 'szw/vim-tags'
+NeoBundle 'cohama/lexima.vim'
 call neobundle#end()
 
 " Required:
