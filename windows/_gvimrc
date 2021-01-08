@@ -10,8 +10,8 @@ nnoremap <C-l> <C-w>l
 " Shift + 矢印でウィンドウサイズを変更
 nnoremap <S-Left>  <C-w><<CR>
 nnoremap <S-Right> <C-w>><CR>
-nnoremap <S-Up>    <C-w>-<CR>
-nnoremap <S-Down>  <C-w>+<CR>
+nnoremap <S-Up>    <C-w>+<CR>
+nnoremap <S-Down>  <C-w>-<CR>
 
 "NERDTreeの自動設定（OFF）
 "autocmd VimEnter * NERDTree ./
