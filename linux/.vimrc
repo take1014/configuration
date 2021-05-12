@@ -38,7 +38,7 @@ set fencs=iso-2022-jp,enc-jp,cp932  "開くファイル
 
 "** 表示設定 **
 syntax on                           "ハイライト表示
-set title                           "タイトル
+set notitle                         "タイトル
 set number                          "行番号
 set ruler							"ルーラーの設定
 set nowrap							"折り返し設定
@@ -62,6 +62,10 @@ set gdefault 						"置換の時 g オプションをデフォルトで有効に
 "** GUIオプション **
 set  guioptions-=m
 set  guioptions-=T
+
+"** statusline **
+set statusline=%F
+set laststatus=2
 
 " 行末のスペースをハイライト表示
 augroup HighlightTrailingSpaces
