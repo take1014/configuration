@@ -27,6 +27,11 @@ set guifont=Ricty:h8.5:cSHIFTJIS    "フォント設定
 set cursorline                      "カーソルラインの色を変更する
 set nowrap                          "折り返さない
 
+" statusline
+set statusline=%F
+set laststatus=2
+set notitle
+
 " ファイル処理関連の設定
 set confirm         " 保存されていないファイルがあるときは終了前に保存確認
 set hidden          " 保存されていないファイルがあるときでも別のファイルを開くことが出来る
