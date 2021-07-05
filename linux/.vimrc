@@ -14,7 +14,8 @@ nnoremap <S-k> <C-w>+
 nnoremap <S-l> <C-w>>
 
 set nocompatible					"vim互換
-set clipboard=unnamed,autoselect   "クリップボードを共有
+"set clipboard=unnamed,autoselect   "クリップボードを共有
+set clipboard=unnamedplus           "クリップボードを共有
 
 "** ビープ音を無効にする **
 set visualbell t_vb=
