@@ -9,18 +9,26 @@
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
+" Color scheme
 Plug 'nanotech/jellybeans.vim'
+" NERDTree
 Plug 'scrooloose/nerdtree'
+" taglist
 Plug 'vim-scripts/taglist.vim'
+" vim-lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
+" auto complete
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+" grep
 Plug 'rking/ag.vim'
 " hightlight
 Plug 'sheerun/vim-polyglot'
 " autocomplete '',"",() etc...
 Plug 'cohama/lexima.vim'
+" comment
+Plug 'tpope/vim-commentary'
 " Initialize plugin system
 call plug#end()
 
