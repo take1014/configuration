@@ -112,18 +112,28 @@ inoremap <silent> <C-[> <ESC>:call ImInActivate()<CR>
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
+" Color scheme
 Plug 'nanotech/jellybeans.vim'
+" NERDTree
 Plug 'scrooloose/nerdtree'
+" taglist
 Plug 'vim-scripts/taglist.vim'
+" vim-lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
+" auto complete
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+" grep
 Plug 'rking/ag.vim'
 " hightlight
 Plug 'sheerun/vim-polyglot'
 " autocomplete '',"",() etc...
 Plug 'cohama/lexima.vim'
+" comment
+Plug 'tpope/vim-commentary'
+" pylint
+Plug 'scrooloose/syntastic'
 " Initialize plugin system
 call plug#end()
 
@@ -140,3 +150,5 @@ let Tlist_Auto_Highlight_Tag = 1
 let Tlist_WinWidth = 40
 let Tlist_File_Fold_Auto_Close = 1
 let Tlist_Display_Tag_Scope = 1
+" pylint
+let g:syntastic_python_checkers = ['pylint']
