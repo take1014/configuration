@@ -49,3 +49,4 @@ let Tlist_File_Fold_Auto_Close = 1
 let Tlist_Display_Tag_Scope = 1
 " pylint
 let g:syntastic_python_checkers = ['pylint']
+let g:syntastic_mode_map = {'mode': 'passive'}
