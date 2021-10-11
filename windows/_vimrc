@@ -105,8 +105,6 @@ set gdefault        " 置換の時 g オプションをデフォルトで有効�
 " 動作環境との統合関連の設定
 " OSのクリップボードをレジスタ指定無しで Yank, Put 出来るようにする
 set clipboard=unnamed,unnamedplus
-" Windows でもパスの区切り文字を / にする
-set shellslash
 " インサートモードから抜けると自動的にIMEをオフにする
 set iminsert=0
 
