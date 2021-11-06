@@ -24,3 +24,4 @@ unset __conda_setup
 #export PATH="/usr/bin/python3:$PATH"
 alias python="python3"
 alias pip="pip3"
+alias ctags='/opt/homebrew/Cellar/ctags/5.8_2/bin/ctags'
