@@ -1,10 +1,15 @@
+alias python="python3"
+alias pip="pip3"
+alias ctags='/opt/homebrew/Cellar/ctags/5.8_2/bin/ctags'
 export PATH=/opt/homebrew/bin:$PATH
-#export PS1="%n@%m :: %~ "
 export EDITOR='vim'
 export CLICOLOR=1
+
+# >>> Prompt color >>>
 autoload colors
 colors
 PROMPT="%n@%m:%{$fg[green]%}%~%{$reset_color%}$"
+# <<< Prompt color <<<
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -20,8 +25,3 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
-
-#export PATH="/usr/bin/python3:$PATH"
-alias python="python3"
-alias pip="pip3"
-alias ctags='/opt/homebrew/Cellar/ctags/5.8_2/bin/ctags'
