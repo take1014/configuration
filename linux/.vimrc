@@ -1,17 +1,3 @@
-" Ctrl + hjkl でウィンドウ間を移動
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-" Shift + 矢印でウィンドウサイズを変更
-nnoremap <S-h> <C-w><
-nnoremap <S-j> <C-w>-
-nnoremap <S-k> <C-w>+
-nnoremap <S-l> <C-w>>
-
-set nocompatible					"vim互換
-"set clipboard=unnamed,autoselect   "クリップボードを共有
 set clipboard=unnamedplus   "クリップボードを共有
 
 "** ビープ音を無効にする **
@@ -76,8 +62,7 @@ set shiftwidth=4                    "インデント幅
 set expandtab	                    "挿入モードでタブ文字有効
 set smartindent						"インデントの自動調整
 set smarttab						"コンテキストに応じたタブの設定
-set autoindent						"改行時に自動でインデント
-
+set ai						        "改行時に自動でインデント
 
 "** 強調表示 **
 set cursorline						"カーソル行を強調表示
