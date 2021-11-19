@@ -1,7 +1,7 @@
 syntax on
 
 " clipboard setting
-set clipboard=unnamedplus
+set clipboard=unnamed,autoselect
 
 " beep sound
 set visualbell t_vb=
