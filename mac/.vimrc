@@ -1,93 +1,61 @@
-set nocompatible					"vim互換
-set clipboard=unnamed,autoselect   "クリップボードを共有
-"set clipboard=unnamedplus   "クリップボードを共有
+syntax on
 
-"** ビープ音を無効にする **
+" clipboard setting
+set clipboard=unnamedplus
+
+" beep sound
 set visualbell t_vb=
-set noerrorbells 					"エラーメッセージの表示時にビープを鳴らさない
+set noerrorbells
 
-"** バックアップファイルの設定 **
-set nobackup						"バックアップを取らない
-set nowritebackup					"ファイル上書き時にバックアップを取らない
-set noswapfile                      "swpの作成無効化
+" backup file
+set nobackup
+set nowritebackup
+set noswapfile
 
-"** 半角文字の設定 **
+" font and encoding
 set guifont=Ricty\ 12
-
-"** 全角文字の設定 **
 set guifontwide=Ricty\ 12
-"g  オプション vimrc
-"** 文字コード設定 **
-set encoding=utf-8                  "エンコード設定
-set fileencoding=utf-8              "保存するファイル
-set fencs=iso-2022-jp,enc-jp,cp932  "開くファイル
+set encoding=utf-8
+set fileencoding=utf-8
+set fencs=iso-2022-jp,enc-jp,cp932
 
-"** 表示設定 **
-syntax on                           "ハイライト表示
-set notitle                         "タイトル
-set number                          "行番号
-set ruler							"ルーラーの設定
-set nowrap							"折り返し設定
+" window
+set notitle
+set number
+set ruler
+set nowrap
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set smartindent
+set smarttab
+set ai
 highlight Comment ctermfg=green
-"** カラースキーマ設定 **
+
+" color scheme
 set t_Co=256
 colorscheme jellybeans
 
-"** 検索 **
-set incsearch						"インクリメンタルサーチを有効
-set hlsearch						"検索結果をハイライト表示
-set wrapscan						"最終行まで検索したら先頭に戻る
-set ignorecase 						"大文字と小文字を区別しない
-set smartcase						"大文字と小文字が混在した言葉で検索を行った場合に限り、大文字と小文字を区別する
+" search option
+set incsearch
+set hlsearch
+set wrapscan
+set ignorecase
+set smartcase
 
-"** 置換 **
-set gdefault 						"置換の時 g オプションをデフォルトで有効にする
+" replacement
+set gdefault
 
-"** GUIオプション **
-set  guioptions-=m
-set  guioptions-=T
+" Backspace behaviour
+set backspace=indent,eol,start
 
 "** statusline **
 set statusline=%F
 set laststatus=2
-
-" 行末のスペースをハイライト表示
-augroup HighlightTrailingSpaces
-  autocmd!
-    autocmd VimEnter,WinEnter,ColorScheme * highlight TrailingSpaces term=underline guibg=Red ctermbg=Red
-      autocmd VimEnter,WinEnter * match TrailingSpaces /\s\+$/
-augroup END
-
-"** タブ、インデントの設定 **
-set tabstop=4                       "タブ文字幅
-set shiftwidth=4                    "インデント幅
-set expandtab	                    "挿入モードでタブ文字有効
-set smartindent						"インデントの自動調整
-set smarttab						"コンテキストに応じたタブの設定
-set autoindent						"改行時に自動でインデント
-
-
-"** 強調表示 **
-set cursorline						"カーソル行を強調表示
-set cursorcolumn					"現在の行を強調表示
-set showmatch						"対応する括弧を強調表示
-set showcmd							"入力中のコマンドを表示
-
-"** ファイル別設定 **
-filetype on
-autocmd FileType c,cpp,perl,html set cindent
-
-"grep時にquickfixウィンドウを開く
-autocmd QuickfixCmdPost make,grep,grepadd,vimgrep if len(getqflist()) != 0 | copen | endif
-
-"行末のスペース削除
-autocmd BufWritePre * :%s/\s\+$//ge
-
-" ** IME **
-function! ImInActivate()
-  call system('fcitx-remote -c')
-endfunction
-inoremap <silent> <C-[> <ESC>:call ImInActivate()<CR>
+set cursorline
+set cursorcolumn
+set showmatch
+set showcmd
 
 " plug.vim settings
 " if unix
