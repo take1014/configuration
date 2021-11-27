@@ -56,18 +56,6 @@ set termguicolors
 "挙動を vi 互換ではなく、Vim のデフォルト設定にする設定
 set nocompatible
 
-" Ctrl + hjkl でウィンドウ間を移動
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-" Shift + 矢印でウィンドウサイズを変更
-nnoremap <S-Left>  <C-w><<CR>
-nnoremap <S-Right> <C-w>><CR>
-nnoremap <S-Up>    <C-w>+<CR>
-nnoremap <S-Down>  <C-w>-<CR>
-
 "画面表示関係
 colorscheme jellybeans              "カラースキーム設定
 set number                          "行番号の設定
@@ -117,28 +105,10 @@ map <silent> <ESC> <ESC>:set iminsert=0<CR>
 set visualbell t_vb=
 set noerrorbells "エラーメッセージの表示時にビープを鳴らさない
 
-" カーソル移動関連の設定
-set backspace=indent,eol,start " Backspaceキーの影響範囲に制限を設けない
-set whichwrap=b,s,h,l,<,>,[,]  " 行頭行末の左右移動で行をまたぐ
-set scrolloff=8                " 上下8行の視界を確保
-set sidescrolloff=16           " 左右スクロール時の視界を確保
-set sidescroll=1               " 左右スクロールは一文字づつ行う
-
-"行末のスペース削除
-autocmd BufWritePre * :%s/\s\+$//ge
-
-" 自動でQuickfix開く
-au QuickfixCmdPost make,grep,grepadd,vimgrep copen
-
 " statusline
 set statusline=%F
 set laststatus=2
 set notitle
-
-"透過性の設定
-autocmd GUIEnter * set transparency=230
-autocmd FocusGained * set transparency=230
-autocmd FocusLost * set transparency=225
 
 set guioptions-=T                   "ツールバーを非表示
 set guioptions-=m                   "メニューバーを非表示
