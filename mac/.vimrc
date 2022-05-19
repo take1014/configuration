@@ -88,8 +88,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'cohama/lexima.vim'
 " comment
 Plug 'tpope/vim-commentary'
-" pylint
-Plug 'scrooloose/syntastic'
 " Initialize plugin system
 call plug#end()
 
@@ -106,6 +104,3 @@ let Tlist_Auto_Highlight_Tag = 1
 let Tlist_WinWidth = 40
 let Tlist_File_Fold_Auto_Close = 1
 let Tlist_Display_Tag_Scope = 1
-" pylint
-let g:syntastic_python_checkers = ['pylint']
-let g:syntastic_mode_map = {'mode': 'passive'}
