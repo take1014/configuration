@@ -1,2 +1,2 @@
 iwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim |` ni $HOME/vimfiles/autoload/plug.vim -Force
-cp ./windows/.vimrc $HOME/
+Copy-Item -Path ./windows/.vimrc -Destination $HOME/ -Force
