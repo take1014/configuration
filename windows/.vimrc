@@ -54,7 +54,9 @@ set nocompatible
 "画面表示関係
 colorscheme jellybeans              " カラースキーム設定
 set number                          " 行番号の設定
-set guifont=Ricty:h8.5:cSHIFTJIS    " フォント設定
+" set guifont=Ricty:h8.5:cSHIFTJIS    " フォント設定
+set guifont=Inconsolata:h8
+set guifontwide=Migu\ 1M:h8
 set cursorline                      " カーソルラインの色を変更する
 hi clear CursorLine                 " カーソルラインの色をクリアに設定
 set nowrap                          " 折り返さない
