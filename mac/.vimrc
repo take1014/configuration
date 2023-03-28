@@ -13,8 +13,8 @@ set nowritebackup
 set noswapfile
 
 " font and encoding
-set guifont=Inconsolata:h12
-set guifontwide=Migu\ 1M:h12
+set guifont=Inconsolata\ 9
+set guifontwide=Migu\ 1M\ 9
 set encoding=utf-8
 set fileencoding=utf-8
 set fencs=iso-2022-jp,enc-jp,cp932
