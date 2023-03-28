@@ -9,3 +9,10 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.c
 ## if windows:
 iwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim |`
     ni $HOME/vimfiles/autoload/plug.vim -Force
+
+## Fonts
+### Inconsolata
+https://fonts.google.com/specimen/Inconsolata
+
+### Migu-1M
+https://mix-mplus-ipa.osdn.jp/migu/
