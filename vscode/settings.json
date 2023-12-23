@@ -23,45 +23,29 @@
         "editor.tabSize": 2,
         "editor.insertSpaces": true
     },
+    "[typescript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+    },
+    "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+    },
+    "[javascriptreact]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+    },
+    "[typescriptreact]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+    },
     "explorer.confirmDelete": false,
     "workbench.editor.enablePreview": false,
     "diffEditor.ignoreTrimWhitespace": false,
-    "python.defaultInterpreterPath": "/home/take/miniconda3/envs/tf2.9",
     "extensions.ignoreRecommendations": true,
     "editor.fontFamily": "Inconsolata, 'Migu 1M'",
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.enableSmartCommit": true,
-    "emmet.preferences": {},
-    "extensions": [
-        "christian-kohler.npm-intellisense",
-        "eamodio.gitlens",
-        "GitHub.vscode-pull-request-github",
-        "janisdd.vscode-edit-csv",
-        "jeff-hykin.better-cpp-syntax",
-        "mosapride.zenkaku",
-        "ms-python.isort",
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-toolsai.jupyter",
-        "ms-toolsai.jupyter-keymap",
-        "ms-toolsai.jupyter-renderers",
-        "ms-toolsai.vscode-jupyter-cell-tags",
-        "ms-toolsai.vscode-jupyter-slideshow",
-        "ms-vscode-remote.remote-ssh",
-        "ms-vscode-remote.remote-ssh-edit",
-        "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack",
-        "ms-vscode.cpptools-themes",
-        "ms-vscode.hexeditor",
-        "PKief.material-icon-theme",
-        "shardulm94.trailing-spaces",
-        "siwatts.jellybeans-vim-theme",
-        "tomoki1207.pdf",
-        "twxs.cmake",
-        "VisualStudioExptTeam.intellicode-api-usage-examples",
-        "VisualStudioExptTeam.vscodeintellicode",
-        "vscodevim.vim"
-        ]
+    "emmet.preferences": {}
 }
