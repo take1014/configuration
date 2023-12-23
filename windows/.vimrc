@@ -75,6 +75,8 @@ set autochdir	    " ﾌｧｲﾙを置いているﾌｫﾙﾀﾞをｶﾚﾝﾄ
 set smartindent     " 改行時に自動でインデント
 set tabstop=4       " 画面上でタブ文字が占める幅
 set shiftwidth=4    " 自動インデントでずれる幅
+autocmd FileType c,cpp,cc,h set tabstop=2
+autocmd FileType c,cpp,cc,h set shiftwidth=2
 set expandtab       " タブ入力を複数の空白入力に置き換える
 set autoindent	    " 改行時に前の行のインデントを継続する
 set softtabstop=4   " 連続した空白に対してタブキーやバックスペースキーでカーソルが動く幅

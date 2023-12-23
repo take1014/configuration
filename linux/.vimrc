@@ -24,11 +24,14 @@ set notitle
 set number
 set ruler
 set nowrap
+# tab settings
 set tabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
 set smarttab
+autocmd FileType c,cpp,cc,h set tabstop=2
+autocmd FileType c,cpp,cc,h set shiftwidth=2
 set ai
 highlight Comment ctermfg=green
 
@@ -56,7 +59,13 @@ set cursorline
 set cursorcolumn
 set showmatch
 set showcmd
-
+" c/cpp/cc
+autocmd FileType c set tabstop=2
+autocmd FileType c set shiftwidth=2
+autocmd FileType c set expandtab
+autocmd FileType cpp set tabstop=2
+autocmd FileType cpp set shiftwidth=2
+autocmd FileType cpp set expandtab
 " plug.vim settings
 " if unix
 "curl -fLo ~/.vim/autoload/plug.vim --create-dirs \

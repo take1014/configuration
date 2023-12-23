@@ -29,6 +29,8 @@ set shiftwidth=4
 set expandtab
 set smartindent
 set smarttab
+autocmd FileType c,cpp,cc,h set tabstop=2
+autocmd FileType c,cpp,cc,h set shiftwidth=2
 set ai
 highlight Comment ctermfg=green
 

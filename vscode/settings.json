@@ -1,0 +1,36 @@
+{
+    "editor.bracketPairColorization.enabled": false,
+    "notebook.lineNumbers": "on",
+    "terminal.integrated.inheritEnv": false,
+    "window.zoomLevel": -2,
+    "editor.minimap.enabled": false,
+    "workbench.colorTheme": "Jellybeans.vim",
+    "workbench.startupEditor": "none",
+    "cmake.configureOnOpen": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "[c]": {
+        "editor.formatOnType": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[cpp]": {
+        "editor.formatOnType": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "explorer.confirmDelete": false,
+    "workbench.editor.enablePreview": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "python.defaultInterpreterPath": "/home/take/miniconda3/envs/tf2.9",
+    "extensions.ignoreRecommendations": true,
+    "editor.fontFamily": "Inconsolata, 'Migu 1M'",
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "emmet.preferences": {}
+}
