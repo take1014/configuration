@@ -25,13 +25,11 @@ set number
 set ruler
 set nowrap
 # tab settings
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 set smartindent
 set smarttab
-autocmd FileType c,cpp,cc,h set tabstop=2
-autocmd FileType c,cpp,cc,h set shiftwidth=2
 set ai
 highlight Comment ctermfg=green
 
