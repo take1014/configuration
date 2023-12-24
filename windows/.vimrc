@@ -49,67 +49,54 @@ let Tlist_Display_Tag_Scope = 1
 
 set termguicolors
 
-"挙動を vi 互換ではなく、Vim のデフォルト設定にする設定
 set nocompatible
 
-"画面表示関係
-colorscheme jellybeans              " カラースキーム設定
-set number                          " 行番号の設定
-" set guifont=Ricty:h8.5:cSHIFTJIS    " フォント設定
+colorscheme jellybeans
+set number
 set guifont=Inconsolata:h8
 set guifontwide=Migu\ 1M:h8
-set cursorline                      " カーソルラインの色を変更する
-hi clear CursorLine                 " カーソルラインの色をクリアに設定
-set nowrap                          " 折り返さない
+set cursorline
+hi clear CursorLine
+set nowrap
 
-" ファイル処理関連の設定
-set confirm         " 保存されていないファイルがあるときは終了前に保存確認
-set hidden          " 保存されていないファイルがあるときでも別のファイルを開くことが出来る
-set autoread        " 外部でファイルに変更がされた場合は読みなおす
-set nobackup        " ファイル保存時にバックアップファイルを作らない
-set noswapfile      " ファイル編集中にスワップファイルを作らない
-set viminfo=        " viminfoファイルを作成しない
-set noundofile      " undoファイルを作成しない
-set autochdir	    " ﾌｧｲﾙを置いているﾌｫﾙﾀﾞをｶﾚﾝﾄとする.
+set confirm
+set hidden
+set autoread
+set nobackup
+set noswapfile
+set viminfo=
+set noundofile
+set autochdir
 
-" タブ/インデントの設定
-set smartindent     " 改行時に自動でインデント
-set tabstop=2       " 画面上でタブ文字が占める幅
-set shiftwidth=2    " 自動インデントでずれる幅
-set expandtab       " タブ入力を複数の空白入力に置き換える
-set autoindent	    " 改行時に前の行のインデントを継続する
-set softtabstop=4   " 連続した空白に対してタブキーやバックスペースキーでカーソルが動く幅
-set formatoptions=q " 自動で改行を許可しない
+set smartindent
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set autoindent
+set softtabstop=2
+set formatoptions=q
 
-"検索/置換の設定
-set hlsearch        " 検索文字列をハイライトする
-set incsearch       " インクリメンタルサーチを行う
-set ignorecase      " 大文字と小文字を区別しない
-set smartcase       " 大文字と小文字が混在した言葉で検索を行った場合に限り、大文字と小文字を区別する
-set wrapscan        " 最後尾まで検索を終えたら次の検索で先頭に移る
-set gdefault        " 置換の時 g オプションをデフォルトで有効にする
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set wrapscan
+set gdefault
 
-" 動作環境との統合関連の設定
-" OSのクリップボードをレジスタ指定無しで Yank, Put 出来るようにする
 set clipboard=unnamed,unnamedplus
-" インサートモードから抜けると自動的にIMEをオフにする
 set iminsert=0
 
 map <silent> <ESC> <ESC>:set iminsert=0<CR>
-"デフォルトは半角入力
-"set imdisable
 
-"ビープの設定
-"ビープ音すべてを無効にする
 set visualbell t_vb=
-set noerrorbells "エラーメッセージの表示時にビープを鳴らさない
+set noerrorbells
 
 " statusline
 set statusline=%F
 set laststatus=2
 set notitle
 
-set guioptions-=T                   "ツールバーを非表示
-set guioptions-=m                   "メニューバーを非表示
-set guioptions+=c                   "簡単な質問をポップアップダイアログではなく、コンソールを使うようにする。
-set guioptions+=M                   "$VIMRUNTIME/menu.vim"を読み込まない。
+set guioptions-=T
+set guioptions-=m
+set guioptions+=c
+set guioptions+=M
