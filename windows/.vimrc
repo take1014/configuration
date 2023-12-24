@@ -35,6 +35,7 @@ call plug#end()
 " Diagnostics and Highlight references settings for vim-lsp
 let g:lsp_document_highlight_enabled = 0
 let g:lsp_diagnostics_enabled = 0         " disable diagnostics support
+let g:lsp_signs_enabled = 0
 
 " taglist
 let Tlist_Ctags_Cmd = "/usr/bin/ctags"
