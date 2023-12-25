@@ -24,7 +24,7 @@ set notitle
 set number
 set ruler
 set nowrap
-# tab settings
+" tab settings
 set tabstop=2
 set shiftwidth=2
 set expandtab
