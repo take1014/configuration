@@ -1,25 +1,24 @@
 {
+    "editor.fontFamily": "Inconsolata, 'Migu 1M'",
     "editor.bracketPairColorization.enabled": false,
-    "notebook.lineNumbers": "on",
-    "terminal.integrated.inheritEnv": false,
-    "window.zoomLevel": -2,
     "editor.minimap.enabled": false,
-    "workbench.colorTheme": "Jellybeans.vim",
-    "workbench.startupEditor": "none",
-    "cmake.configureOnOpen": true,
-    "workbench.iconTheme": "material-icon-theme",
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "[python]": {
         "editor.tabSize": 4
     },
-    "explorer.confirmDelete": false,
+    "workbench.colorTheme": "Jellybeans.vim",
+    "workbench.startupEditor": "none",
+    "workbench.iconTheme": "material-icon-theme",
     "workbench.editor.enablePreview": false,
+    "notebook.lineNumbers": "on",
+    "terminal.integrated.inheritEnv": false,
+    "window.zoomLevel": -2,
+    "cmake.configureOnOpen": true,
+    "explorer.confirmDelete": false,
     "diffEditor.ignoreTrimWhitespace": false,
     "extensions.ignoreRecommendations": true,
-    "editor.fontFamily": "Inconsolata, 'Migu 1M'",
     "git.autofetch": true,
     "git.confirmSync": false,
-    "git.enableSmartCommit": true,
-    "emmet.preferences": {}
+    "git.enableSmartCommit": true
 }
