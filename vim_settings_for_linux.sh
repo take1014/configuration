@@ -23,6 +23,10 @@ make -j4
 sudo make install
 cd ..
 
+# change symbolic link for vi
+sudo rm /usr/bin/vi
+sudo ln -s /usr/local/bin/vim /usr/bin/vi 
+
 # install plugins
 sudo apt-get install curl
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
