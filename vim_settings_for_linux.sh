@@ -1,7 +1,7 @@
 # vim
 # build vim
 sudo apt-get update
-sudo apt-get install libncurses5-dev libx11-dev libxtst-dev
+sudo apt-get install libncurses5-dev libx11-dev libxtst-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
 git clone https://github.com/vim/vim.git
 cd vim
 # you must configure --with-python3-config-dir for your python3 enviroment.
