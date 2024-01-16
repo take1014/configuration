@@ -1,7 +1,13 @@
 syntax on
 
 " clipboard setting
-set clipboard=unnamedplus
+if has("unix") && !has("macunix")
+  " linux
+  set clipboard=unnamedplus
+elseif has("macunix")
+  " macOSX
+  set clipboard=unnamed,autoselect
+endif
 
 " beep sound
 set visualbell t_vb=
@@ -55,13 +61,6 @@ set cursorline
 set cursorcolumn
 set showmatch
 set showcmd
-" c/cpp/cc
-autocmd FileType c set tabstop=2
-autocmd FileType c set shiftwidth=2
-autocmd FileType c set expandtab
-autocmd FileType cpp set tabstop=2
-autocmd FileType cpp set shiftwidth=2
-autocmd FileType cpp set expandtab
 " plug.vim settings
 " if unix
 "curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
