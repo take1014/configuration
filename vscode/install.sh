@@ -21,6 +21,7 @@ extensions=(
     "ms-vscode.cpptools"
     "ms-vscode.cpptools-extension-pack"
     "ms-vscode.cpptools-themes"
+    "ms-vscode.makefile-tools",
     "PKief.material-icon-theme"
     "shardulm94.trailing-spaces"
     "siwatts.jellybeans-vim-theme"
