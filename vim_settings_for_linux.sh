@@ -1,7 +1,8 @@
 # vim
 # build vim
 sudo apt-get update
-sudo apt-get install python3-dev python3-venv libncurses5-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
+sudo apt-get full-upgrade
+sudo apt-get install -y tmux python3-dev python3-venv libncurses5-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
 git clone https://github.com/vim/vim.git
 cd vim
 
