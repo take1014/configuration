@@ -26,7 +26,7 @@ cd ..
 
 # change symbolic link for vi
 sudo rm /usr/bin/vi
-sudo ln -s /usr/local/bin/vim /usr/bin/vi 
+sudo ln -s /usr/local/bin/vim /usr/bin/vi
 
 # install plugins
 sudo apt-get install curl
