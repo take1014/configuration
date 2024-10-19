@@ -76,8 +76,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'nanotech/jellybeans.vim'
 " NERDTree
 Plug 'scrooloose/nerdtree'
-" taglist
-Plug 'vim-scripts/taglist.vim'
 " vim-lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
@@ -99,13 +97,3 @@ call plug#end()
 let g:lsp_document_highlight_enabled = 0
 let g:lsp_diagnostics_enabled = 0         " disable diagnostics support
 let g:lsp_signs_enabled = 0
-
-" taglist
-let Tlist_Ctags_Cmd = "/usr/bin/ctags"
-let Tlist_Show_One_File = 1
-let Tlist_Use_Right_Window = 1
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Auto_Highlight_Tag = 1
-let Tlist_WinWidth = 40
-let Tlist_File_Fold_Auto_Close = 1
-let Tlist_Display_Tag_Scope = 1
