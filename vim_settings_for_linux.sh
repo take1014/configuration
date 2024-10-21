@@ -36,5 +36,3 @@ cp ./linux/.vimrc ~/
 vim -c PlugInstall -c q -c q!
 mkdir ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
-# vs code
-cp ./vscode/settings.json $HOME/.config/Code/User/
