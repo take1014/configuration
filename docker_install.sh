@@ -1,3 +1,4 @@
+# install docker
 sudo apt update
 sudo apt install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -8,3 +9,8 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo docker --version
 sudo usermod -aG docker $USER
+
+# install qemu
+sudo apt update
+sudo apt install qemu-user-static binfmt-support 
+sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
