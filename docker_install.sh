@@ -14,3 +14,22 @@ sudo usermod -aG docker $USER
 sudo apt update
 sudo apt install qemu-user-static binfmt-support 
 sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+# install nvidia docker
+# https://highreso.jp/edgehub/machinelearning/ubuntudocker.html#index_id7
+# set gpg key
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# install nvidia container toolkit
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+# set docker daemon
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo vim /etc/nvidia-container-runtime/config.toml
+# set no-cgroups=false
+sudo systemctl restart docker
+# test nvidia docker container
+docker run -it --rm --runtime=nvidia --gpus all nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04 /bin/bash
