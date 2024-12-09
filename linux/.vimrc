@@ -39,7 +39,7 @@ highlight Comment ctermfg=green
 
 " color scheme
 set t_Co=256
-colorscheme jellybeans
+silent! colorscheme jellybeans
 
 " search option
 set incsearch
