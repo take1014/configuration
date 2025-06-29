@@ -1,9 +1,10 @@
 # vim
 # build vim
-sudo apt-get update
-sudo apt-get full-upgrade
-sudo apt-get install -y tmux python3-dev python3-venv libncurses5-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
-sudo apt install silversearcher-ag
+sudo apt update
+sudo apt -y full-upgrade
+sudo apt install -y tmux python3-dev python3-venv libncurses5-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
+# silver searcher
+sudo apt install -y silversearcher-ag
 git clone https://github.com/vim/vim.git
 cd vim
 
@@ -30,7 +31,7 @@ sudo rm /usr/bin/vi
 sudo ln -s /usr/local/bin/vim /usr/bin/vi
 
 # install plugins
-sudo apt-get install curl
+sudo apt-get install -y curl
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 cp ./linux/.vimrc ~/
 vim -c PlugInstall -c q -c q!
