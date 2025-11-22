@@ -15,7 +15,7 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "[python]": {
-      "editor.tabSize": 4
+    "editor.tabSize": 4
   },
   "workbench.colorTheme": "Jellybeans.vim",
   "workbench.startupEditor": "none",
@@ -30,5 +30,8 @@
   "extensions.ignoreRecommendations": true,
   "git.autofetch": true,
   "git.confirmSync": false,
-  "git.enableSmartCommit": true
+  "git.enableSmartCommit": true,
+  "window.openFoldersInNewWindow": "off",
+  "window.openFilesInNewWindow": "off",
+  "remote.SSH.reuseConnection": true
 }
