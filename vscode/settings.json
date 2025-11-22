@@ -30,8 +30,5 @@
   "extensions.ignoreRecommendations": true,
   "git.autofetch": true,
   "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "window.openFoldersInNewWindow": "off",
-  "window.openFilesInNewWindow": "off",
-  "remote.SSH.reuseConnection": true
+  "git.enableSmartCommit": true
 }
