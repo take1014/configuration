@@ -8,6 +8,7 @@ sudo apt install -y silversearcher-ag
 git clone https://github.com/vim/vim.git
 cd vim
 
+# Japanese folder name -> English folder name
 LANG=C xdg-user-dirs-gtk-update
 
 # Deactivate Conda environment if activated!!!!!!
