@@ -8,6 +8,8 @@ sudo apt install -y silversearcher-ag
 git clone https://github.com/vim/vim.git
 cd vim
 
+LANG=C xdg-user-dirs-gtk-update
+
 # Deactivate Conda environment if activated!!!!!!
 # you must configure --with-python3-config-dir for your python3 enviroment.
 PYTHON3_CONFIG_DIR=/lib/python3.10/config-3.10-x86_64-linux-gnu
