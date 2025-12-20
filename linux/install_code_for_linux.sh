@@ -5,5 +5,5 @@ echo "deb [signed-by=/usr/share/keyrings/microsoft.gpg arch=amd64] https://packa
 sudo apt update
 sudo apt install code
 mkdir -p ~/.config/Code/User
-cp ./vscode/settings.json $HOME/.config/Code/User/
-./vscode/install.sh
+cp ../vscode/settings.json $HOME/.config/Code/User/
+../vscode/install.sh
