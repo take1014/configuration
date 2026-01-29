@@ -7,7 +7,7 @@ set -e
 #
 # 実行方法:
 #   chmod +x install_tlp.sh
-#   sudo ./install_tlp.sh
+#   ./install_tlp.sh    # no need to run the whole script with sudo
 #
 # --------------------------------------------
 # TLP サービス操作メモ:
@@ -29,20 +29,20 @@ set -e
 # ============================================
 
 echo "== Install TLP =="
-apt update
-apt install -y tlp
+sudo apt update
+sudo apt install -y tlp
 
 echo "== Disable power-profiles-daemon (conflict prevention) =="
-systemctl stop power-profiles-daemon || true
-systemctl disable power-profiles-daemon || true
+sudo systemctl stop power-profiles-daemon || true
+sudo systemctl disable power-profiles-daemon || true
 
 echo "== Backup existing tlp.conf =="
 if [ -f /etc/tlp.conf ]; then
-    cp /etc/tlp.conf /etc/tlp.conf.bak.$(date +%Y%m%d%H%M%S)
+    sudo cp /etc/tlp.conf /etc/tlp.conf.bak.$(date +%Y%m%d%H%M%S)
 fi
 
 echo "== Write tlp.conf =="
-cat << 'EOF' > /etc/tlp.conf
+sudo tee /etc/tlp.conf > /dev/null << 'EOF'
 # ==================================================
 # ThinkPad X13 Gen 5 - Recommended minimal TLP config
 # Ubuntu 24.04
@@ -80,11 +80,11 @@ STOP_CHARGE_THRESH_BAT0=90
 EOF
 
 echo "== Enable & start TLP =="
-systemctl enable tlp
-systemctl start tlp
+sudo systemctl enable tlp
+sudo systemctl start tlp
 
 echo "== Apply TLP settings =="
-tlp start
+sudo tlp start
 
 echo "== Done =="
 echo "Check status with:"

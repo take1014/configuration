@@ -12,7 +12,7 @@ sudo usermod -aG docker $USER
 
 # install qemu
 sudo apt update
-sudo apt install qemu-user-static binfmt-support 
+sudo apt install qemu-user-static binfmt-support
 sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 # install nvidia docker

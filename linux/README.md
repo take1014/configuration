@@ -59,9 +59,11 @@ TLP（電源管理ツール）をインストール・設定します。ThinkPad
 
 **実行方法:**
 ```bash
-sudo chmod +x install_tlp.sh
-sudo ./install_tlp.sh
+chmod +x install_tlp.sh
+./install_tlp.sh  # スクリプト内で必要なコマンドは個別にsudoを使います
 ```
+
+実行ユーザーが `sudo` 権限を持っていることを確認してください。
 
 **サービス管理コマンド:**
 ```bash
