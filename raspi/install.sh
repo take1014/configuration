@@ -7,7 +7,7 @@ sudo ln -s /usr/bin/vim /usr/bin/vi
 # install plugins
 sudo apt-get install -y curl
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-cp ./linux/.vimrc ~/
+cp ../linux/.vimrc ~/
 vim -c PlugInstall -c q -c q!
 mkdir ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
