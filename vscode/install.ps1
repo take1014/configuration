@@ -3,13 +3,14 @@
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 $extensions = @(
+    # --- AI ---
+    "anthropic.claude-code"
+    "github.copilot-chat"
+
     # --- Intellisense ---
     "christian-kohler.path-intellisense"
-    "github.copilot"
-    "github.copilot-chat"
     "ms-python.vscode-pylance"
     "ms-python.vscode-python-envs"
-    "VisualStudioExptTeam.vscodeintellicode"
 
     # --- Python ---
     "ms-python.python"

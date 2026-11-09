@@ -1,42 +1,40 @@
-# Linux Configuration Scripts
+# Linux (Ubuntu) セットアップ
 
-Ubuntu用のセットアップスクリプト集です。Linux環境を構築する際に各種ツール・アプリケーションを自動インストール・設定できます。
-
-## スクリプト一覧
-
-### 1. **docker_install.sh**
-Dockerとその関連ツールをインストールします。
-
-- **Docker**: コンテナ仮想化プラットフォーム
-- **QEMU**: マルチアーキテクチャサポート（ARM等）
-- **NVIDIA Docker**: GPU対応Dockerコンテナ実行環境
-
-**実行方法:**
+## 手順
 ```bash
-chmod +x docker_install.sh
-./docker_install.sh
+git clone git@github.com:take1014/configuration.git
+cd configuration/linux
+./install_all.sh              # 必須セットアップ
+./install_all.sh --nvidia     # + NVIDIA Container Toolkit
+```
+
+`install_all.sh` で入るもの:
+
+| 項目 | 内容 |
+|---|---|
+| Docker | Docker CE / QEMU（`--nvidia` で NVIDIA Container Toolkit も） |
+| VS Code | 本体、`settings.json`、拡張機能（`anthropic.claude-code` を含む） |
+| Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加） |
+| vim | ソースからビルド（Python3 対応）、vim-plug、プラグイン、jellybeans |
+
+- スクリプト全体を `sudo` で実行する必要はありません（内部で必要な箇所だけ `sudo` を使います）。
+- 途中で失敗しても残りは続行し、最後に失敗した項目を表示します。
+- 完了後は **再ログイン**（docker グループ反映）し、`claude` で起動確認します。
+- Conda 環境が有効なら、事前に `conda deactivate` してください（vim ビルド用）。
+- 再実行しても安全です。
+
+## 任意のスクリプト
+必要に応じて個別に実行します。
+
+```bash
+./pyenv_setup_for_linux.sh   # pyenv / pyenv-virtualenv / Poetry
+./install_tlp.sh             # TLP 電源管理 (ThinkPad X13 Gen 5 向け)
+./install_discord.sh         # Discord
 ```
 
 ---
 
-### 2. **install_code_for_linux.sh**
-Visual Studio Code（VS Code）をインストールし、設定を適用します。
-
-- VS Codeエディタのインストール
-- 設定ファイル（settings.json）の配置
-- 拡張機能のインストール
-
-**実行方法:**
-```bash
-chmod +x install_code_for_linux.sh
-./install_code_for_linux.sh
-```
-
-**前提条件:** `vscode/`ディレクトリに`settings.json`と`install.sh`が必要です
-
----
-
-### 3. **install_discord.sh**
+### install_discord.sh
 Discord（チャットアプリケーション）をインストールします。
 
 - オフィシャルのDeb形式からダウンロード・インストール
@@ -49,7 +47,7 @@ chmod +x install_discord.sh
 
 ---
 
-### 4. **install_tlp.sh**
+### install_tlp.sh
 TLP（電源管理ツール）をインストール・設定します。ThinkPad X13 Gen 5向けの最適化設定が含まれています。
 
 - TLPのインストール
@@ -81,7 +79,7 @@ systemctl status tlp
 
 ---
 
-### 5. **pyenv_setup_for_linux.sh**
+### pyenv_setup_for_linux.sh
 Python開発環境をセットアップします。
 
 - **pyenv**: Python バージョン管理ツール
@@ -103,40 +101,6 @@ chmod +x pyenv_setup_for_linux.sh
 ./pyenv_setup_for_linux.sh
 source ~/.bashrc  # 設定を反映
 ```
-
----
-
-### 6. **vim_settings_for_linux.sh**
-Vimエディタを最新版からビルド・インストールし、プラグイン環境を整えます。
-
-- Vimソースコードからのビルド
-- Python3対応（IDE機能・スクリプト実行に必要）
-- vim-plug（プラグインマネージャー）のインストール
-- プリインストールプラグイン（jellybeans カラースキーム等）の配置
-
-**実行方法:**
-```bash
-chmod +x vim_settings_for_linux.sh
-./vim_settings_for_linux.sh
-```
-
-**重要な注意:** Conda環境がアクティブになっている場合は、事前に無効化してください
-```bash
-conda deactivate
-```
-
----
-
-## 実行順序（推奨）
-
-新しいUbuntu環境でセットアップする場合は、以下の順序での実行を推奨します：
-
-1. `pyenv_setup_for_linux.sh` - Python開発環境
-2. `vim_settings_for_linux.sh` - Vimエディタ
-3. `install_code_for_linux.sh` - VS Code
-4. `docker_install.sh` - Docker（rootアクセス必要）
-5. `install_tlp.sh` - 電源管理（ThinkPad利用時）
-6. `install_discord.sh` - Discord
 
 ---
 
