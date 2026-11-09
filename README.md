@@ -16,3 +16,7 @@ https://fonts.google.com/specimen/Inconsolata
 
 ### Migu-1M
 https://mix-mplus-ipa.osdn.jp/migu/
+## Claude Code (CLI)
+- linux: `linux/install_claude.sh`
+- mac: `mac/install_claude.sh`
+- windows: `windows/install_claude.ps1`
