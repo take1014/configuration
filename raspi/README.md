@@ -4,8 +4,8 @@ Raspberry Pi OS (Debian 系) 向けです。
 
 ## 入るもの
 - vim (apt 版) と vim-plug、`.vimrc`、プラグイン、jellybeans カラースキーム（`vi` も vim に切り替え）
-- tmux と `.tmux.conf`
-- `~/.bashrc` の設定（alias、`EDITOR`、プロンプト色）
+- tmux（xsel も導入）
+- dotfiles: `~/.bashrc` に `linux/.bashrc` を**追記**（alias、`EDITOR`、プロンプト色）、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**
 - Claude Code (CLI)（`~/.local/bin` を PATH に追加）
 
 ## 手順
@@ -21,5 +21,5 @@ cd configuration/raspi
   `uname -m` が `aarch64` なら対象です。
 - 初回は `apt full-upgrade` を実行するため時間がかかります。
 - スクリプト全体を `sudo` で実行する必要はありません。
-- 再実行しても安全です（`.bashrc` への追記は未設定のときだけ）。
+- 再実行しても安全です。`.bashrc` は `# >>> configuration: .bashrc >>>` のブロックだけを最新内容に置き換え、`.tmux.conf` / `.vimrc` は内容が違えば `.bak.<日時>` にバックアップしてから上書きします。
 - `linux/.vimrc` と `linux/.tmux.conf` を共用しています。リポジトリ全体を clone した状態で実行してください。

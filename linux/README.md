@@ -16,12 +16,22 @@ cd configuration/linux
 | VS Code | 本体、`settings.json`、拡張機能（`anthropic.claude-code` を含む） |
 | Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加） |
 | vim | ソースからビルド（Python3 対応）、vim-plug、プラグイン、jellybeans |
+| dotfiles | `~/.bashrc` に `linux/.bashrc` を**追記**、zsh があれば `~/.zshrc` に `linux/.zshrc` を**追記**、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**（tmux / xsel も導入） |
 
 - スクリプト全体を `sudo` で実行する必要はありません（内部で必要な箇所だけ `sudo` を使います）。
 - 途中で失敗しても残りは続行し、最後に失敗した項目を表示します。
 - 完了後は **再ログイン**（docker グループ反映）し、`claude` で起動確認します。
 - Conda 環境が有効なら、事前に `conda deactivate` してください（vim ビルド用）。
 - 再実行しても安全です。
+
+### dotfiles の扱い
+| ファイル | 方法 | 再実行時 |
+|---|---|---|
+| `.bashrc` / `.zshrc` | `# >>> configuration: ... >>>` 〜 `# <<< ... <<<` で囲んだブロックとして**追記** | ブロックだけを最新内容に置き換え（重複しない。ブロック外の自分の記述は保持） |
+| `.tmux.conf` / `.vimrc` | **コピー** | 同じ内容なら何もしない。違う場合は `~/.tmux.conf.bak.<日時>` にバックアップしてから上書き |
+
+設定を変えたいときは、リポジトリ側のファイルを編集して `install_all.sh` を再実行してください。
+`.tmux.conf` / `.vimrc` は mac・raspi と共用です（`linux/` に置いています）。
 
 ## 任意のスクリプト
 必要に応じて個別に実行します。

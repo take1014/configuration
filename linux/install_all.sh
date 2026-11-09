@@ -1,8 +1,9 @@
 #!/bin/bash
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
+source ../common/lib.sh
 
-# Linux (Ubuntu) 必須セットアップ: docker / VS Code / Claude Code / vim
+# Linux (Ubuntu) 必須セットアップ: docker / VS Code / Claude Code / vim / dotfiles
 # 実行方法:
 #   ./install_all.sh              # 必須の4つ
 #   ./install_all.sh --nvidia     # docker に NVIDIA Container Toolkit も追加
@@ -123,10 +124,24 @@ install_vim() (
 
     # install plugins
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    cp ./.vimrc ~/
+    copy_file ./.vimrc ~/.vimrc
     vim -c PlugInstall -c q -c q!
     mkdir -p ~/.vim/colors
     cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
+)
+
+# ---------------------------------------------------------------- dotfiles
+# .bashrc / .zshrc はリポジトリの内容を追記、.tmux.conf はコピー
+install_dotfiles() (
+    set -euo pipefail
+    echo "== dotfiles =="
+    # xsel: .tmux.conf の copy-mode (y) がクリップボード連携に使う
+    sudo apt-get install -y tmux xsel
+    append_block ./.bashrc ~/.bashrc
+    if command -v zsh >/dev/null 2>&1 || [ -f ~/.zshrc ]; then
+        append_block ./.zshrc ~/.zshrc
+    fi
+    copy_file ./.tmux.conf ~/.tmux.conf
 )
 
 # ---------------------------------------------------------------- main
@@ -142,6 +157,7 @@ run docker      install_docker
 run vscode      install_vscode
 run claude      install_claude
 run vim         install_vim
+run dotfiles    install_dotfiles
 
 echo
 if [ ${#failed[@]} -gt 0 ]; then

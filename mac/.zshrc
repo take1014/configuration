@@ -1,6 +1,5 @@
 alias python="python3"
 alias pip="pip3"
-alias ctags='/opt/homebrew/Cellar/ctags/5.8_2/bin/ctags'
 alias ls='ls --color=auto'
 alias ll='ls -l'
 export PATH=/opt/homebrew/bin:$PATH
