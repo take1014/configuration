@@ -1,10 +1,10 @@
 #!/bin/bash
+set -uo pipefail
 
-# VS Code$B3HD%5!G=0l3g%$%s%9%H!<%k%9%/%j%W%H(B
-# $B;H$$J}(B:
-#   1. $B$3$NFbMF$r(B install_vscode_extensions.sh $B$J$I$N%U%!%$%kL>$GJ]B8(B
-#   2. chmod +x install_vscode_extensions.sh $B$G<B9T8"8B$rIUM?(B
-#   3. ./install_vscode_extensions.sh $B$G<B9T(B
+# VS Code 拡張機能一括インストールスクリプト
+# 使い方:
+#   ./install.sh
+# 'code' コマンドが PATH にある必要があります。
 
 extensions=(
     # --- Intellisense ---
@@ -60,10 +60,26 @@ extensions=(
     "vscodevim.vim"
 )
 
-for extension in "${extensions[@]}"
-do
+if ! command -v code >/dev/null 2>&1; then
+    echo "[ERROR] 'code' command not found." >&2
+    echo "VS Code のコマンドパレットから 'Shell Command: Install code command in PATH' を実行してください。" >&2
+    exit 1
+fi
+
+# 既インストールの拡張はスキップ
+installed="$(code --list-extensions | tr '[:upper:]' '[:lower:]')"
+failed=()
+for extension in "${extensions[@]}"; do
+    if grep -qxi "$extension" <<< "$installed"; then
+        echo "Skip (already installed): $extension"
+        continue
+    fi
     echo "Installing $extension ..."
-    code --install-extension "$extension"
+    code --install-extension "$extension" || failed+=("$extension")
 done
 
+if [ ${#failed[@]} -gt 0 ]; then
+    echo "Failed: ${failed[*]}" >&2
+    exit 1
+fi
 echo "All extensions installed."

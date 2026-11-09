@@ -1,7 +1,6 @@
 # VS Code extension batch install script (Windows PowerShell)
 # Usage:
-#   1. Save this as install_extensions.ps1
-#   2. Run in PowerShell (e.g., powershell -ExecutionPolicy Bypass -File .\install_extensions.ps1)
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 $extensions = @(
     # --- Intellisense ---

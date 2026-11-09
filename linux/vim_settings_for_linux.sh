@@ -1,42 +1,46 @@
-# vim
-# build vim
-sudo apt update
-sudo apt -y full-upgrade
-sudo apt install -y tmux python3-dev python3-venv libncurses5-dev libx11-dev libxtst-dev libxt-dev libsm-dev libxpm-dev
-# silver searcher
-sudo apt install -y silversearcher-ag
-git clone https://github.com/vim/vim.git
-cd vim
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+# Build vim from source and install plugins (Ubuntu)
+# Conda 環境は事前に deactivate しておくこと!
+
+sudo apt-get update
+sudo apt-get install -y git tmux python3-dev python3-venv libncurses5-dev libx11-dev \
+    libxtst-dev libxt-dev libsm-dev libxpm-dev silversearcher-ag curl build-essential
 
 # Japanese folder name -> English folder name
-LANG=C xdg-user-dirs-gtk-update
+LANG=C xdg-user-dirs-gtk-update || true
 
-# Deactivate Conda environment if activated!!!!!!
-# you must configure --with-python3-config-dir for your python3 enviroment.
-PYTHON3_CONFIG_DIR=/lib/python3.10/config-3.10-x86_64-linux-gnu
-./configure --with-features=huge \
-            --enable-multibyte \
-            --disable-rubyinterp \
-            --enable-python3interp \
-            --with-python3-config-dir=$PYTHON3_CONFIG_DIR \
-            --disable-perlinterp \
-            --disable-luainterp \
-            --enable-fail-if-missing \
-            --prefix=/usr/local \
-            --disable-gui \
-            --with-x
-make -j4
-sudo make install
-cd ..
+# python3 config dir を自動検出
+PYTHON3_CONFIG_DIR="$(python3-config --configdir)"
+
+build_dir="$(mktemp -d)"
+trap 'rm -rf "$build_dir"' EXIT
+git clone --depth 1 https://github.com/vim/vim.git "$build_dir/vim"
+(
+    cd "$build_dir/vim"
+    ./configure --with-features=huge \
+                --enable-multibyte \
+                --disable-rubyinterp \
+                --enable-python3interp \
+                --with-python3-config-dir="$PYTHON3_CONFIG_DIR" \
+                --disable-perlinterp \
+                --disable-luainterp \
+                --enable-fail-if-missing \
+                --prefix=/usr/local \
+                --disable-gui \
+                --with-x
+    make -j"$(nproc)"
+    sudo make install
+)
 
 # change symbolic link for vi
-sudo rm /usr/bin/vi
-sudo ln -s /usr/local/bin/vim /usr/bin/vi
+sudo ln -sf /usr/local/bin/vim /usr/bin/vi
 
 # install plugins
-sudo apt-get install -y curl
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 cp ./.vimrc ~/
 vim -c PlugInstall -c q -c q!
-mkdir ~/.vim/colors
+mkdir -p ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
