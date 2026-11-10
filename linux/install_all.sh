@@ -82,6 +82,9 @@ install_claude() (
     if ! grep -q '\.local/bin' ~/.bashrc 2>/dev/null; then
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
     fi
+
+    # CLAUDE.md / agents を ~/.claude に配置
+    ../claude/install.sh
 )
 
 # ---------------------------------------------------------------- vim

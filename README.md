@@ -50,6 +50,7 @@ cd raspi
 | Claude Code (CLI) | ✅ | ✅ | ✅ | ✅ (64bit OS) |
 | vim + プラグイン | ✅ (ソースビルド) | ✅ | ✅ | ✅ (apt) |
 | VS Code 設定 + 拡張機能 | ✅ (本体も) | ✅ | ✅ | - |
+| `~/.claude` (CLAUDE.md / agents) | ✅ | ✅ | ✅ | ✅ |
 | Docker | ✅ | - | - | - |
 | `.bashrc` / `.zshrc` 追記 | ✅ | ✅ (.zshrc) | - | ✅ (.bashrc) |
 | `.tmux.conf` コピー | ✅ | ✅ | - | ✅ |
@@ -77,6 +78,7 @@ cd raspi
 | `windows/` | Windows 用セットアップ、`.vimrc` |
 | `raspi/` | Raspberry Pi 用セットアップ |
 | `common/` | セットアップスクリプト共通の関数（追記・コピー） |
+| `claude/` | Claude Code の設定 (`CLAUDE.md`、サブエージェント定義): [claude/README.md](claude/README.md) |
 | `vscode/` | VS Code の `settings.json` と拡張機能インストーラ（各 OS から呼ばれる）: [vscode/README.md](vscode/README.md) |
 
 ## フォント

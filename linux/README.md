@@ -14,7 +14,7 @@ cd configuration/linux
 |---|---|
 | Docker | Docker CE / QEMU（`--nvidia` で NVIDIA Container Toolkit も） |
 | VS Code | 本体、`settings.json`、拡張機能（`anthropic.claude-code` を含む） |
-| Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加） |
+| Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加）と、`CLAUDE.md` / サブエージェントの `~/.claude` への配置（[claude/README.md](../claude/README.md)） |
 | vim | ソースからビルド（Python3 対応）、vim-plug、プラグイン、jellybeans |
 | dotfiles | `~/.bashrc` に `linux/.bashrc` を**追記**、zsh があれば `~/.zshrc` に `linux/.zshrc` を**追記**、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**（tmux / xsel も導入） |
 

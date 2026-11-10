@@ -2,6 +2,7 @@
 
 ## 入るもの
 - Claude Code (CLI)
+- Claude Code の設定（`CLAUDE.md` とサブエージェントを `~/.claude` に配置、詳細は [../claude/README.md](../claude/README.md)）
 - vim の設定（vim-plug、`.vimrc`、プラグイン、jellybeans カラースキーム）
 - VS Code の `settings.json` と拡張機能（`anthropic.claude-code` を含む）
 

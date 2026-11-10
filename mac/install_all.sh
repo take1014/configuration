@@ -15,6 +15,9 @@ if ! grep -q '\.local/bin' ~/.zshrc 2>/dev/null; then
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 fi
 
+# CLAUDE.md / agents を ~/.claude に配置
+../claude/install.sh
+
 echo "== vim =="
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 copy_file ../linux/.vimrc ~/.vimrc

@@ -7,6 +7,7 @@ Raspberry Pi OS (Debian 系) 向けです。
 - tmux（xsel も導入）
 - dotfiles: `~/.bashrc` に `linux/.bashrc` を**追記**（alias、`EDITOR`、プロンプト色）、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**
 - Claude Code (CLI)（`~/.local/bin` を PATH に追加）
+- Claude Code の設定（`CLAUDE.md` とサブエージェントを `~/.claude` に配置、詳細は [../claude/README.md](../claude/README.md)）
 
 ## 手順
 ```bash

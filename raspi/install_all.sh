@@ -40,4 +40,7 @@ else
     echo "[WARN] $(uname -m) は未対応のため Claude Code のインストールをスキップします (64bit OS が必要)。"
 fi
 
+# CLAUDE.md / agents を ~/.claude に配置
+../claude/install.sh
+
 echo "Done. Restart your shell (or: source ~/.bashrc), then run: claude"

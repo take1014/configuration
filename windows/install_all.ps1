@@ -7,6 +7,9 @@ Set-Location $PSScriptRoot
 Write-Host "== Claude Code (CLI) =="
 irm https://claude.ai/install.ps1 | iex
 
+# CLAUDE.md / agents を ~/.claude に配置
+& "..\claude\install.ps1"
+
 Write-Host "== vim =="
 if (-not (Get-Command vim -ErrorAction SilentlyContinue)) {
     Write-Host "[ERROR] 'vim' command not found. Install vim first (e.g. winget install vim.vim) and re-run."
