@@ -7,7 +7,7 @@ source ../common/lib.sh
 # Usage:
 #   ./install.sh                # install the CLI (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents) only
-# - Config files: do nothing if identical; otherwise back up to .bak.<timestamp> and overwrite.
+# - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 
 config_only=0

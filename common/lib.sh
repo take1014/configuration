@@ -30,7 +30,7 @@ append_block() {
 
 # copy_file <src> <dest>
 #   Copy <src> to <dest>. Do nothing if the contents are identical.
-#   If <dest> exists and differs, back it up to <dest>.bak.<timestamp> before overwriting.
+#   If <dest> exists and differs, overwrite it (no backup).
 copy_file() {
     local src="$1" dest="$2"
     if [ -f "$dest" ]; then
@@ -38,8 +38,6 @@ copy_file() {
             echo "up to date: $dest"
             return 0
         fi
-        cp "$dest" "$dest.bak.$(date +%Y%m%d%H%M%S)"
-        echo "backup: $dest.bak.*"
     fi
     cp "$src" "$dest"
     echo "copied: $dest"

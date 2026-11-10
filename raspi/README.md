@@ -22,5 +22,5 @@ cd configuration/raspi
   `uname -m` が `aarch64` なら対象です。
 - 初回は `apt full-upgrade` を実行するため時間がかかります。
 - スクリプト全体を `sudo` で実行する必要はありません。
-- 再実行しても安全です。`.bashrc` は `# >>> configuration: .bashrc >>>` のブロックだけを最新内容に置き換え、`.tmux.conf` / `.vimrc` は内容が違えば `.bak.<日時>` にバックアップしてから上書きします。
+- 再実行しても安全です。`.bashrc` は `# >>> configuration: .bashrc >>>` のブロックだけを最新内容に置き換え、`.tmux.conf` / `.vimrc` は内容が違えば上書きします。
 - `linux/.vimrc` と `linux/.tmux.conf` を共用しています。リポジトリ全体を clone した状態で実行してください。
