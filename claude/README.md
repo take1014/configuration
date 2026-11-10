@@ -1,7 +1,7 @@
 # Claude Code 設定
 
-Claude Code を効率よく使うための、グローバル設定 (`CLAUDE.md`) とサブエージェント定義です。
-各OSの `install_all.*` から自動で `~/.claude` にコピーされます（単独で実行する場合は下記）。
+Claude Code の **CLI 本体のインストール**と、グローバル設定 (`CLAUDE.md`)・サブエージェント定義の配置をまとめたものです。
+各OSの `install_all.*` からこのフォルダのスクリプトが呼ばれます（単独で実行する場合は下記）。
 
 ## ファイル
 | ファイル | 配置先 | 内容 |
@@ -11,15 +11,19 @@ Claude Code を効率よく使うための、グローバル設定 (`CLAUDE.md`)
 | `agents/developer.md` | 同上 | 実装担当 (Sonnet) |
 | `agents/reviewer.md` | 同上 | レビュー担当 (Opus、読み取り専用) |
 | `agents/worker.md` | 同上 | 定型作業担当 (Haiku) |
-| `install.sh` / `install.ps1` | - | 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
+| `install.sh` / `install.ps1` | - | CLI 本体のインストール + PATH 設定 + 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
 
 ## インストール
 ```bash
-./install.sh                                                   # Linux / macOS / Raspberry Pi
+./install.sh                  # Linux / macOS / Raspberry Pi
+./install.sh --config-only    # 設定の配置だけ (CLI のインストールを省略)
 ```
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install.ps1         # Windows
+powershell -ExecutionPolicy Bypass -File .\install.ps1                # Windows
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定の配置だけ
 ```
+- CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
+- `~/.local/bin` が PATH に無ければ、`~/.zshrc`（zsh の場合）または `~/.bashrc` に追記します。
 - 内容が同じなら何もしません。違う場合は `.bak.<日時>` にバックアップしてから上書きします。
 - インストール後は Claude Code を再起動してください。`/agents` で一覧を確認できます。
 - `settings.json`（テーマなどの個人設定）は管理しません。上書きもしません。

@@ -28,19 +28,7 @@ echo "== dotfiles =="
 append_block ../linux/.bashrc ~/.bashrc
 copy_file ../linux/.tmux.conf ~/.tmux.conf
 
-echo "== Claude Code (CLI) =="
-# ネイティブインストーラは 64bit OS (aarch64) が必要
-if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "x86_64" ]; then
-    curl -fsSL https://claude.ai/install.sh | bash
-    # ~/.local/bin を PATH に追加 (未設定の場合のみ)
-    if ! grep -q '\.local/bin' ~/.bashrc 2>/dev/null; then
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-    fi
-else
-    echo "[WARN] $(uname -m) は未対応のため Claude Code のインストールをスキップします (64bit OS が必要)。"
-fi
-
-# CLAUDE.md / agents を ~/.claude に配置
+# CLI 本体のインストール (64bit OS のみ) + PATH + CLAUDE.md / agents の配置
 ../claude/install.sh
 
 echo "Done. Restart your shell (or: source ~/.bashrc), then run: claude"

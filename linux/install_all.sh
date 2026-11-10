@@ -71,19 +71,7 @@ install_vscode() (
 # ---------------------------------------------------------------- Claude Code
 install_claude() (
     set -euo pipefail
-    echo "== Install Claude Code (CLI) =="
-    if ! command -v curl >/dev/null 2>&1; then
-        sudo apt-get update
-        sudo apt-get install -y curl
-    fi
-    curl -fsSL https://claude.ai/install.sh | bash
-
-    # ~/.local/bin を PATH に追加 (未設定の場合のみ)
-    if ! grep -q '\.local/bin' ~/.bashrc 2>/dev/null; then
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-    fi
-
-    # CLAUDE.md / agents を ~/.claude に配置
+    # CLI 本体のインストール + PATH + CLAUDE.md / agents の配置
     ../claude/install.sh
 )
 

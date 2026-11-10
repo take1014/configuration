@@ -4,10 +4,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
-Write-Host "== Claude Code (CLI) =="
-irm https://claude.ai/install.ps1 | iex
-
-# CLAUDE.md / agents を ~/.claude に配置
+# CLI 本体のインストール + CLAUDE.md / agents の配置
 & "..\claude\install.ps1"
 
 Write-Host "== vim =="

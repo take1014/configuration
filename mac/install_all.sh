@@ -7,15 +7,7 @@ source ../common/lib.sh
 # 実行方法:
 #   ./install_all.sh
 
-echo "== Claude Code (CLI) =="
-curl -fsSL https://claude.ai/install.sh | bash
-
-# ~/.local/bin を PATH に追加 (未設定の場合のみ)
-if ! grep -q '\.local/bin' ~/.zshrc 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-fi
-
-# CLAUDE.md / agents を ~/.claude に配置
+# CLI 本体のインストール + PATH + CLAUDE.md / agents の配置
 ../claude/install.sh
 
 echo "== vim =="
