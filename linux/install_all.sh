@@ -155,4 +155,4 @@ if [ ${#failed[@]} -gt 0 ]; then
     echo "Failed: ${failed[*]}" >&2
     exit 1
 fi
-echo "All done. docker グループ反映のため、再ログインしてください。"
+echo "All done. Log out and back in to apply the docker group."

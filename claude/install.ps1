@@ -24,7 +24,7 @@ if (-not $ConfigOnly) {
     Write-Host "== Claude Code (CLI) =="
     $local = Join-Path $HOME '.local\bin\claude.exe'
     if ((Get-Command claude -ErrorAction SilentlyContinue) -or (Test-Path $local)) {
-        Write-Host "already installed: claude (更新は 'claude update')"
+        Write-Host "already installed: claude (run 'claude update' to upgrade)"
     } else {
         irm https://claude.ai/install.ps1 | iex
     }
@@ -39,4 +39,4 @@ Get-ChildItem (Join-Path $PSScriptRoot 'agents') -Filter *.md | ForEach-Object {
     Copy-WithBackup $_.FullName (Join-Path $dest "agents/$($_.Name)")
 }
 
-Write-Host "Done. Claude Code を再起動 (または /agents で確認) してください。"
+Write-Host "Done. Restart Claude Code (or run /agents to verify)."

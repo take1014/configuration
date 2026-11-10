@@ -27,7 +27,7 @@ Write-Host "== VS Code extensions =="
 if (Get-Command code -ErrorAction SilentlyContinue) {
     & "..\vscode\install.ps1"
 } else {
-    Write-Host "'code' command not found. VS Code のコマンドパレットで 'Shell Command: Install code command in PATH' を実行後、..\vscode\install.ps1 を実行してください。"
+    Write-Host "'code' command not found. Run 'Shell Command: Install code command in PATH' from the VS Code command palette, then run ..\vscode\install.ps1."
 }
 
 Write-Host "`nDone. Restart your terminal, then run: claude"

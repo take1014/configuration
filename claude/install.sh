@@ -18,7 +18,7 @@ install_cli() {
     # ネイティブインストーラは 64bit OS が必要 (Raspberry Pi の 32bit OS 等は対象外)
     case "$(uname -m)" in
         x86_64|aarch64|arm64) ;;
-        *) echo "[WARN] $(uname -m) は未対応のため CLI のインストールをスキップします (64bit OS が必要)。"
+        *) echo "[WARN] $(uname -m)  is not supported; skipping CLI install (64-bit OS required)."
            return 0 ;;
     esac
 
@@ -27,13 +27,13 @@ install_cli() {
             sudo apt-get update
             sudo apt-get install -y curl
         else
-            echo "[ERROR] curl が見つかりません。インストールして再実行してください。" >&2
+            echo "[ERROR] curl not found. Install it and re-run." >&2
             exit 1
         fi
     fi
 
     if command -v claude >/dev/null 2>&1 || [ -x "$HOME/.local/bin/claude" ]; then
-        echo "already installed: claude (更新は 'claude update')"
+        echo "already installed: claude (run 'claude update' to upgrade)"
     else
         curl -fsSL https://claude.ai/install.sh | bash
     fi
@@ -61,4 +61,4 @@ install_config() {
 [ "$config_only" -eq 1 ] || install_cli
 install_config
 
-echo "Done. Claude Code を再起動 (または /agents で確認) してください。"
+echo "Done. Restart Claude Code (or run /agents to verify)."

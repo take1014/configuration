@@ -24,7 +24,7 @@ if ! command -v tmux >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then
         brew install tmux
     else
-        echo "[WARN] tmux が未インストールで brew も見つかりません。tmux を入れてください。"
+        echo "[WARN] tmux is not installed and brew was not found. Please install tmux."
     fi
 fi
 copy_file ../linux/.tmux.conf ~/.tmux.conf
@@ -38,7 +38,7 @@ echo "== VS Code extensions =="
 if command -v code >/dev/null 2>&1; then
     ../vscode/install.sh
 else
-    echo "'code' command not found. VS Code のコマンドパレットで 'Shell Command: Install code command in PATH' を実行後、../vscode/install.sh を実行してください。"
+    echo "'code' command not found. Run 'Shell Command: Install code command in PATH' from the VS Code command palette, then run ../vscode/install.sh."
 fi
 
 echo "Done. Restart your shell, then run: claude"

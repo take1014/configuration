@@ -63,7 +63,7 @@ extensions=(
 
 if ! command -v code >/dev/null 2>&1; then
     echo "[ERROR] 'code' command not found." >&2
-    echo "VS Code のコマンドパレットから 'Shell Command: Install code command in PATH' を実行してください。" >&2
+    echo "Run 'Shell Command: Install code command in PATH' from the VS Code command palette." >&2
     exit 1
 fi
 
