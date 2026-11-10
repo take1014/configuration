@@ -1,9 +1,9 @@
 #!/bin/bash
-# linux / mac / raspi のセットアップスクリプトから source して使う共通関数
+# Common functions, sourced by the linux / mac / raspi setup scripts
 
 # append_block <src> <dest>
-#   <src> の内容を <dest> に「マーカー付きブロック」として追記する。
-#   既にブロックがあれば、そのブロックだけを最新の内容に置き換える (重複追記しない)。
+#   Append the contents of <src> to <dest> as a marker-delimited block.
+#   If the block already exists, replace only that block with the latest contents (no duplicates).
 append_block() {
     local src="$1" dest="$2" name begin end replaced=0
     name="$(basename "$src")"
@@ -29,8 +29,8 @@ append_block() {
 }
 
 # copy_file <src> <dest>
-#   <src> を <dest> にコピーする。内容が同じなら何もしない。
-#   <dest> が既にあり内容が違う場合は、<dest>.bak.<日時> にバックアップしてから上書きする。
+#   Copy <src> to <dest>. Do nothing if the contents are identical.
+#   If <dest> exists and differs, back it up to <dest>.bak.<timestamp> before overwriting.
 copy_file() {
     local src="$1" dest="$2"
     if [ -f "$dest" ]; then

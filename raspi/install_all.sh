@@ -3,10 +3,10 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Raspberry Pi (Raspberry Pi OS / Debian 系) セットアップ:
-#   vim (apt 版) / tmux / bashrc / Claude Code (CLI)
-# 実行方法:
-#   ./install_all.sh   (スクリプト全体を sudo で実行する必要はありません)
+# Raspberry Pi (Raspberry Pi OS / Debian-based) setup:
+#   vim (apt version) / tmux / bashrc / Claude Code (CLI)
+# Usage:
+#   ./install_all.sh   (do not run the whole script with sudo)
 
 echo "== Install packages =="
 sudo apt-get update
@@ -24,11 +24,11 @@ mkdir -p ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
 
 echo "== dotfiles =="
-# .bashrc はリポジトリ (linux/.bashrc) の内容を追記、.tmux.conf はコピー
+# Append the repo's linux/.bashrc contents to .bashrc; copy .tmux.conf
 append_block ../linux/.bashrc ~/.bashrc
 copy_file ../linux/.tmux.conf ~/.tmux.conf
 
-# CLI 本体のインストール (64bit OS のみ) + PATH + CLAUDE.md / agents の配置
+# Install the CLI (64-bit OS only) + set PATH + place CLAUDE.md / agents
 ../claude/install.sh
 
 echo "Done. Restart your shell (or: source ~/.bashrc), then run: claude"

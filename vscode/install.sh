@@ -1,10 +1,10 @@
 #!/bin/bash
 set -uo pipefail
 
-# VS Code 拡張機能一括インストールスクリプト
-# 使い方:
+# Bulk-install script for VS Code extensions
+# Usage:
 #   ./install.sh
-# 'code' コマンドが PATH にある必要があります。
+# The 'code' command must be on PATH.
 
 extensions=(
     # --- AI ---
@@ -67,7 +67,7 @@ if ! command -v code >/dev/null 2>&1; then
     exit 1
 fi
 
-# 既インストールの拡張はスキップ
+# Skip extensions that are already installed
 installed="$(code --list-extensions | tr '[:upper:]' '[:lower:]')"
 failed=()
 for extension in "${extensions[@]}"; do

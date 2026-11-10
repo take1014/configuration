@@ -10,13 +10,13 @@ sudo apt-get install -y git build-essential libssl-dev zlib1g-dev \
     libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev \
     liblzma-dev libsasl2-dev python3-dev libldap2-dev python3-poetry
 
-# clone pyenv / pyenv-virtualenv (既にあればスキップ)
+# clone pyenv / pyenv-virtualenv (skip if already present)
 export PYENV_ROOT="$HOME/.pyenv"
 [ -d "$PYENV_ROOT" ] || git clone https://github.com/pyenv/pyenv.git "$PYENV_ROOT"
 [ -d "$PYENV_ROOT/plugins/pyenv-virtualenv" ] || \
     git clone https://github.com/pyenv/pyenv-virtualenv.git "$PYENV_ROOT/plugins/pyenv-virtualenv"
 
-# add settings to .bashrc (未設定の場合のみ)
+# add settings to .bashrc (only if not already set)
 if ! grep -q 'PYENV_ROOT' ~/.bashrc 2>/dev/null; then
     cat >> ~/.bashrc <<'RC'
 

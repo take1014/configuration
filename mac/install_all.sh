@@ -3,11 +3,11 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# mac セットアップ: Claude Code (CLI) / vim (vim-plug + プラグイン) / VS Code settings + 拡張機能 / dotfiles (.zshrc, .tmux.conf)
-# 実行方法:
+# mac setup: Claude Code (CLI) / vim (vim-plug + plugins) / VS Code settings + extensions / dotfiles (.zshrc, .tmux.conf)
+# Usage:
 #   ./install_all.sh
 
-# CLI 本体のインストール + PATH + CLAUDE.md / agents の配置
+# Install the CLI + set PATH + place CLAUDE.md / agents
 ../claude/install.sh
 
 echo "== vim =="
@@ -18,7 +18,7 @@ mkdir -p ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/
 
 echo "== dotfiles =="
-# .zshrc はリポジトリの内容を追記、.tmux.conf (linux と共用) はコピー
+# Append the repo's .zshrc contents; copy .tmux.conf (shared with linux)
 append_block ./.zshrc ~/.zshrc
 if ! command -v tmux >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then

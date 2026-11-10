@@ -1,9 +1,9 @@
-# Claude Code のインストール (CLI 本体 + CLAUDE.md / agents) (Windows)
-# 実行方法 (PowerShell):
-#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI (未導入時のみ) + 設定
-#   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定の配置だけ
-# - 設定は内容が同じなら何もしない。違う場合は .bak.<日時> にバックアップしてから上書きする。
-# - settings.json は個人設定 (テーマ等) を含むため、管理・上書きしない。
+# Install Claude Code (CLI + CLAUDE.md / agents) (Windows)
+# Usage (PowerShell):
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI (only if not installed) + config
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # config files only
+# - Config files: do nothing if identical; otherwise back up to .bak.<timestamp> and overwrite.
+# - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 param([switch]$ConfigOnly)
 $ErrorActionPreference = 'Stop'
 

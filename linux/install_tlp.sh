@@ -5,26 +5,26 @@ set -e
 # TLP setup script for ThinkPad X13 Gen 5
 # Ubuntu 24.04
 #
-# 実行方法:
+# Usage:
 #   chmod +x install_tlp.sh
 #   ./install_tlp.sh    # no need to run the whole script with sudo
 #
 # --------------------------------------------
-# TLP サービス操作メモ:
+# TLP service operation notes:
 #
-#   サービス有効化:
+#   Enable the service:
 #     sudo systemctl enable tlp
 #
-#   サービス無効化:
+#   Disable the service:
 #     sudo systemctl disable tlp
 #
-#   サービス開始:
+#   Start the service:
 #     sudo systemctl start tlp
 #
-#   サービス停止:
+#   Stop the service:
 #     sudo systemctl stop tlp
 #
-#   状態確認:
+#   Check status:
 #     systemctl status tlp
 # ============================================
 

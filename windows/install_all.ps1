@@ -1,10 +1,10 @@
-# Windows セットアップ: Claude Code (CLI) / vim (vim-plug + プラグイン) / VS Code settings + 拡張機能
-# 実行方法 (PowerShell):
+# Windows setup: Claude Code (CLI) / vim (vim-plug + plugins) / VS Code settings + extensions
+# Usage (PowerShell):
 #   powershell -ExecutionPolicy Bypass -File .\install_all.ps1
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
-# CLI 本体のインストール + CLAUDE.md / agents の配置
+# Install the CLI + place CLAUDE.md / agents
 & "..\claude\install.ps1"
 
 Write-Host "== vim =="

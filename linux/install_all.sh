@@ -3,12 +3,12 @@ set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Linux (Ubuntu) 必須セットアップ: docker / VS Code / Claude Code / vim / dotfiles
-# 実行方法:
-#   ./install_all.sh              # 必須の4つ
-#   ./install_all.sh --nvidia     # docker に NVIDIA Container Toolkit も追加
-#   (スクリプト全体を sudo で実行する必要はありません)
-# 途中で失敗しても残りは続行し、最後に結果を表示します。
+# Linux (Ubuntu) required setup: docker / VS Code / Claude Code / vim / dotfiles
+# Usage:
+#   ./install_all.sh              # the required components
+#   ./install_all.sh --nvidia     # also add the NVIDIA Container Toolkit to docker
+#   (do not run the whole script with sudo)
+# Continues past failures and prints a summary at the end.
 
 WITH_NVIDIA=0
 [ "${1:-}" = "--nvidia" ] && WITH_NVIDIA=1
@@ -45,7 +45,7 @@ install_docker() (
         sudo apt-get update
         sudo apt-get install -y nvidia-container-toolkit
         sudo nvidia-ctk runtime configure --runtime=docker
-        # no-cgroups = false に設定 (コメントアウトされていても対応)
+        # Set no-cgroups = false (also handles the commented-out form)
         sudo sed -i -E 's/^#?\s*no-cgroups\s*=.*/no-cgroups = false/' /etc/nvidia-container-runtime/config.toml
         sudo systemctl restart docker
         echo "test: docker run -it --rm --runtime=nvidia --gpus all nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04 /bin/bash"
@@ -71,14 +71,14 @@ install_vscode() (
 # ---------------------------------------------------------------- Claude Code
 install_claude() (
     set -euo pipefail
-    # CLI 本体のインストール + PATH + CLAUDE.md / agents の配置
+    # Install the CLI + set PATH + place CLAUDE.md / agents
     ../claude/install.sh
 )
 
 # ---------------------------------------------------------------- vim
 install_vim() (
     set -euo pipefail
-    # Conda 環境は事前に deactivate しておくこと!
+    # Deactivate any Conda environment beforehand!
     echo "== Build & install vim =="
     sudo apt-get update
     sudo apt-get install -y git tmux python3-dev python3-venv libncurses5-dev libx11-dev \
@@ -87,7 +87,7 @@ install_vim() (
     # Japanese folder name -> English folder name
     LANG=C xdg-user-dirs-gtk-update || true
 
-    # python3 config dir を自動検出
+    # Auto-detect the python3 config dir
     PYTHON3_CONFIG_DIR="$(python3-config --configdir)"
 
     build_dir="$(mktemp -d)"
@@ -122,11 +122,11 @@ install_vim() (
 )
 
 # ---------------------------------------------------------------- dotfiles
-# .bashrc / .zshrc はリポジトリの内容を追記、.tmux.conf はコピー
+# Append the repo's .bashrc / .zshrc contents; copy .tmux.conf
 install_dotfiles() (
     set -euo pipefail
     echo "== dotfiles =="
-    # xsel: .tmux.conf の copy-mode (y) がクリップボード連携に使う
+    # xsel: used by copy-mode (y) in .tmux.conf for clipboard integration
     sudo apt-get install -y tmux xsel
     append_block ./.bashrc ~/.bashrc
     if command -v zsh >/dev/null 2>&1 || [ -f ~/.zshrc ]; then

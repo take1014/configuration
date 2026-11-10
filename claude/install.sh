@@ -3,19 +3,19 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Claude Code のインストール (CLI 本体 + CLAUDE.md / agents) (Linux / macOS / Raspberry Pi)
-# 実行方法:
-#   ./install.sh                # CLI をインストール (未導入時のみ) + 設定を ~/.claude に配置
-#   ./install.sh --config-only  # 設定 (CLAUDE.md / agents) の配置だけ行う
-# - 設定は内容が同じなら何もしない。違う場合は .bak.<日時> にバックアップしてから上書きする。
-# - settings.json は個人設定 (テーマ等) を含むため、管理・上書きしない。
+# Install Claude Code (CLI + CLAUDE.md / agents) (Linux / macOS / Raspberry Pi)
+# Usage:
+#   ./install.sh                # install the CLI (only if not installed) + place config in ~/.claude
+#   ./install.sh --config-only  # place config (CLAUDE.md / agents) only
+# - Config files: do nothing if identical; otherwise back up to .bak.<timestamp> and overwrite.
+# - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 
 config_only=0
 [ "${1:-}" = "--config-only" ] && config_only=1
 
 install_cli() {
     echo "== Claude Code (CLI) =="
-    # ネイティブインストーラは 64bit OS が必要 (Raspberry Pi の 32bit OS 等は対象外)
+    # The native installer requires a 64-bit OS (e.g. 32-bit Raspberry Pi OS is not supported)
     case "$(uname -m)" in
         x86_64|aarch64|arm64) ;;
         *) echo "[WARN] $(uname -m)  is not supported; skipping CLI install (64-bit OS required)."
@@ -38,7 +38,7 @@ install_cli() {
         curl -fsSL https://claude.ai/install.sh | bash
     fi
 
-    # ~/.local/bin を PATH に追加 (未設定の場合のみ)
+    # Add ~/.local/bin to PATH (only if not already set)
     local rc="$HOME/.bashrc"
     case "${SHELL:-}" in */zsh) rc="$HOME/.zshrc" ;; esac
     if ! grep -q '\.local/bin' "$rc" 2>/dev/null; then
