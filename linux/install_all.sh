@@ -64,7 +64,7 @@ install_vscode() (
     sudo apt-get install -y code
 
     mkdir -p ~/.config/Code/User
-    cp ../vscode/settings.json ~/.config/Code/User/
+    copy_file ../vscode/settings.json ~/.config/Code/User/settings.json
     ../vscode/install.sh
 )
 

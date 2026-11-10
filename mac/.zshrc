@@ -1,6 +1,5 @@
 alias python="python3"
 alias pip="pip3"
-alias ls='ls --color=auto'
 alias ll='ls -l'
 export PATH=/opt/homebrew/bin:$PATH
 export EDITOR='vim'

@@ -1,40 +1,45 @@
-# グローバル設定 (~/.claude/CLAUDE.md)
+# Global settings (~/.claude/CLAUDE.md)
 
-## 基本方針
-- **回答・説明・コード中のコメントは日本語**で書く。識別子は英語。コミットメッセージは、そのリポジトリの既存の履歴の言語に合わせる。
-- 変更前に、関連するコードと既存の書き方を読んで把握する。推測で書かない。
-- 依頼された範囲だけを変更する。頼まれていないリファクタ・機能追加・ファイル新規作成はしない。
-- 曖昧で、答えによって作業内容が変わる場合だけ質問する。それ以外は妥当なデフォルトで進めて、判断を報告する。
-- 完了を宣言する前に、テスト・ビルド・実行などで**動作を確認**する。確認できなかった場合は、できなかったと正直に報告する。
+## Language
+- Write **replies and explanations to the user in Japanese** (including plan and review summaries).
+- Write **code comments, script/program output (log and error messages), and documentation inside code in English**. Identifiers are English too.
+- Commit messages follow the language of the repository's existing history.
+- Project-specific files (e.g. a README already written in Japanese) keep their existing language.
 
-## 安全
-- `git commit` / `git push` / ファイル削除 / 外部サービスへの送信は、**依頼されたときだけ**行う。
-- 秘密情報 (`.env`、鍵、トークン) は読み書き・出力・コミットしない。
-- 破壊的な操作 (`rm -rf`、`git reset --hard`、`git push --force` など) の前には、対象を確認して許可を得る。
+## Basics
+- Before changing anything, read the relevant code and existing conventions. Do not guess.
+- Change only what was asked. Do not refactor, add features, or create new files unless requested.
+- Ask a question only when the request is ambiguous and the answer changes the work. Otherwise proceed with a sensible default and report the decision.
+- Before declaring completion, **verify the behavior** by running tests, builds, or the code itself. If verification was not possible, say so honestly.
 
-## コーディング
-- 既存のスタイル・命名・ライブラリに合わせる。新しい依存は理由を添えて提案する。
-- 小さく、読みやすい差分にする。不要なコメント・防御的コードを足さない。
-- シェルスクリプトは `set -euo pipefail`、変数は引用符で囲む、再実行しても壊れない (冪等) ようにする。
+## Safety
+- Run `git commit` / `git push` / file deletion / sending data to external services **only when asked**.
+- Never read, write, print, or commit secrets (`.env`, keys, tokens).
+- Before destructive operations (`rm -rf`, `git reset --hard`, `git push --force`, etc.), check the target and get permission.
 
-## サブエージェントの使い分け
-メインのセッションは調整役。作業の性質で、次のエージェントとモデルに振り分ける。
-(エージェントは別のエージェントを起動できないので、委譲はメインから行う。)
+## Coding
+- Match the existing style, naming, and libraries. Propose new dependencies with a reason.
+- Keep diffs small and readable. Do not add unnecessary comments or defensive code.
+- Shell scripts: use `set -euo pipefail`, quote variables, and make them idempotent (safe to re-run).
 
-| エージェント | モデル | 使う場面 |
+## Using subagents
+The main session is the coordinator. Delegate by the nature of the work, to the agents and models below.
+(Agents cannot launch other agents, so delegation is done from the main session.)
+
+| Agent | Model | When to use |
 |---|---|---|
-| `planner` | Opus | 設計・方針決定、複数ファイルにまたがる変更の計画 (読み取り専用) |
-| `developer` | Sonnet | 実装・バグ修正・テスト作成などの通常のコーディング |
-| `reviewer` | Opus | 変更後のレビュー、バグ・セキュリティ・設計の指摘 (読み取り専用) |
-| `worker` | Haiku | 検索・一覧化・機械的な置換・ログ整形・テスト実行と結果の要約などの定型作業 |
+| `planner` | Opus | Design and decisions, planning changes that span multiple files (read-only) |
+| `developer` | Sonnet | Implementation, bug fixes, writing tests, and other regular coding |
+| `reviewer` | Opus | Post-change review; pointing out bugs, security, and design issues (read-only) |
+| `worker` | Haiku | Routine work: searching, listing, mechanical replacements, log formatting, running tests and summarizing results |
 
-- 標準の流れ: `planner` (必要なときだけ) → `developer` → `reviewer`。
-- 独立した作業は**並列**で起動する (例: 複数ファイルの調査を `worker` に同時に依頼)。
-- 小さな修正 (1〜2 ファイルで自明なもの) は、エージェントを使わずメインで直接行う。
-- 調査で大量の出力が出そうな作業は、`worker` に任せて要約だけを受け取る (メインの文脈を節約する)。
-- 委譲するときは、目的・対象ファイル・完了条件・やってはいけないことを具体的に書く。エージェントは会話の履歴を見ない。
+- Standard flow: `planner` (only when needed) -> `developer` -> `reviewer`.
+- Launch independent tasks in **parallel** (e.g. ask several `worker`s to investigate different files at once).
+- Do small fixes (obvious, 1-2 files) directly in the main session without agents.
+- Delegate work that would produce a large amount of output to `worker` and receive only the summary (saves main context).
+- When delegating, state the goal, target files, completion criteria, and what must not be done. Agents do not see the conversation history.
 
-## 文脈の管理
-- 話題が変わったら `/clear`、長くなったら `/compact` を使う。
-- 大きな作業は、先に計画を立ててから実装する (Plan モード / `planner`)。
-- この `CLAUDE.md` は短く保つ。プロジェクト固有のルールは、各リポジトリの `CLAUDE.md` に書く。
+## Context management
+- Use `/clear` when the topic changes and `/compact` when the conversation gets long.
+- For large tasks, plan first and then implement (Plan mode / `planner`).
+- Keep this `CLAUDE.md` short. Put project-specific rules in each repository's own `CLAUDE.md`.

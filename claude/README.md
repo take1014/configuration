@@ -6,7 +6,7 @@ Claude Code の **CLI 本体のインストール**と、グローバル設定 (
 ## ファイル
 | ファイル | 配置先 | 内容 |
 |---|---|---|
-| `CLAUDE.md` | `~/.claude/CLAUDE.md` | 全プロジェクト共通のルール（日本語で回答、安全、コーディング、エージェントの使い分け） |
+| `CLAUDE.md` | `~/.claude/CLAUDE.md` | 全プロジェクト共通のルール（日本語で回答・コード内は英語、安全、コーディング、エージェントの使い分け） |
 | `agents/planner.md` | `~/.claude/agents/` | 設計・計画担当 (Opus、読み取り専用) |
 | `agents/developer.md` | 同上 | 実装担当 (Sonnet) |
 | `agents/reviewer.md` | 同上 | レビュー担当 (Opus、読み取り専用) |
