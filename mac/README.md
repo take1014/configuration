@@ -35,5 +35,5 @@ cd configuration/mac
 - `linux/.tmux.conf` の copy-mode（`y` / `Enter`）は Linux 用の `xsel` を使っています。mac でクリップボード連携が必要なら `pbcopy` への切り替えが必要です。
 
 ## 補足
-- 再実行しても安全です（上記のとおり、`.zshrc` はブロックを置き換え、`.tmux.conf` / `.vimrc` は差分があるときだけバックアップ付きで上書きします）。
+- 再実行しても安全です（上記のとおり、`.zshrc` はブロックを置き換え、`.tmux.conf` / `.vimrc` は差分があるときだけ上書きします（バックアップなし））。
 - フォント: [Inconsolata](https://fonts.google.com/specimen/Inconsolata) / [Migu-1M](https://mix-mplus-ipa.osdn.jp/migu/)（VS Code の `editor.fontFamily` で使用）
