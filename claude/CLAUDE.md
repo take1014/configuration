@@ -39,6 +39,13 @@ The main session is the coordinator. Delegate by the nature of the work, to the 
 - Delegate work that would produce a large amount of output to `worker` and receive only the summary (saves main context).
 - When delegating, state the goal, target files, completion criteria, and what must not be done. Agents do not see the conversation history.
 
+IMPORTANT: Mandatory rules (these are not left to judgment).
+"Code" below means programs, scripts, and config files that change behavior. Documentation, comments, and README-only changes are exempt.
+- If a code change will touch **3 or more code files**, or there are several possible approaches, run `planner` **before** editing.
+- If a change touched **any code file**, run `reviewer` on the diff **before** reporting completion or committing, whichever comes first. One review covers both, as long as the diff has not changed since.
+- Fix the `reviewer`'s findings (or explain why not) before committing.
+- In every completion report, state which agents were used, or why none were used.
+
 ## Context management
 - Use `/clear` when the topic changes and `/compact` when the conversation gets long.
 - For large tasks, plan first and then implement (Plan mode / `planner`).
