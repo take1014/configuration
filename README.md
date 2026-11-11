@@ -77,7 +77,7 @@ cd raspi
 | `mac/` | macOS 用セットアップ、`.zshrc` |
 | `windows/` | Windows 用セットアップ、`.vimrc` |
 | `raspi/` | Raspberry Pi 用セットアップ |
-| `common/` | セットアップスクリプト共通の関数（追記・コピー） |
+| `common/` | セットアップスクリプト共通の関数（追記・コピー）: [common/README.md](common/README.md) |
 | `claude/` | Claude Code の設定 (`CLAUDE.md`、サブエージェント定義): [claude/README.md](claude/README.md) |
 | `vscode/` | VS Code の `settings.json` と拡張機能インストーラ（各 OS から呼ばれる）: [vscode/README.md](vscode/README.md) |
 
