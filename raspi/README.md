@@ -3,7 +3,7 @@
 Raspberry Pi OS (Debian 系) 向けです。
 
 ## 入るもの
-- vim (apt 版) と vim-plug、`.vimrc`、プラグイン、jellybeans カラースキーム（`vi` も vim に切り替え）
+- vim (apt 版) と vim-plug、`.vimrc`、プラグイン、jellybeans カラースキーム（`vi` も update-alternatives で vim に切り替え）
 - tmux（xsel も導入）
 - dotfiles: `~/.bashrc` に `linux/.bashrc` を**追記**（alias、`EDITOR`、プロンプト色）、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**
 - Claude Code (CLI)（`~/.local/bin` を PATH に追加）

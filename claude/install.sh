@@ -39,12 +39,18 @@ install_cli() {
     fi
 
     # Add ~/.local/bin to PATH (only if not already set)
-    local rc="$HOME/.bashrc"
-    case "${SHELL:-}" in */zsh) rc="$HOME/.zshrc" ;; esac
-    if ! grep -q '\.local/bin' "$rc" 2>/dev/null; then
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
-        echo "updated: $rc  (PATH)"
-    fi
+    #   .bashrc: always on Linux, on macOS only if it exists; .zshrc: if zsh is installed or the file exists
+    local rc
+    for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+        case "$rc" in
+            */.bashrc) [ "$(uname -s)" != Darwin ] || [ -f "$rc" ] || continue ;;
+            */.zshrc)  command -v zsh >/dev/null 2>&1 || [ -f "$rc" ] || continue ;;
+        esac
+        if ! grep -q '\.local/bin' "$rc" 2>/dev/null; then
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
+            echo "updated: $rc  (PATH)"
+        fi
+    done
 }
 
 install_config() {

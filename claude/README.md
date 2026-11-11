@@ -23,7 +23,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1                # Windows
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定の配置だけ
 ```
 - CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
-- `~/.local/bin` が PATH に無ければ、`~/.zshrc`（zsh の場合）または `~/.bashrc` に追記します。
+- `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。
 - 内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。
 - インストール後は Claude Code を再起動してください。`/agents` で一覧を確認できます。
 - `settings.json`（テーマなどの個人設定）は管理しません。上書きもしません。

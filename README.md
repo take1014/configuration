@@ -63,7 +63,7 @@ cd raspi
 
 - 設定の元ファイルはこのリポジトリです。変更したいときはリポジトリ側を編集して `install_all` を再実行してください。
 - `.tmux.conf` と `.vimrc` は `linux/` のものを linux / mac / raspi で共用しています。
-- 共通処理は [common/lib.sh](common/lib.sh) です。
+- 共通処理は [common/lib.sh](common/lib.sh)（Linux / macOS / Raspberry Pi）と [common/lib.ps1](common/lib.ps1)（Windows）です。
 
 ## 共通の注意
 - スクリプト全体を `sudo` で実行する必要はありません（必要な箇所だけ内部で `sudo` します）。Windows も管理者権限は不要です。
@@ -77,7 +77,7 @@ cd raspi
 | `mac/` | macOS 用セットアップ、`.zshrc` |
 | `windows/` | Windows 用セットアップ、`.vimrc` |
 | `raspi/` | Raspberry Pi 用セットアップ |
-| `common/` | セットアップスクリプト共通の関数（追記・コピー）: [common/README.md](common/README.md) |
+| `common/` | セットアップスクリプト共通の関数（`lib.sh`: 追記・コピー、`lib.ps1`: コピー）: [common/README.md](common/README.md) |
 | `claude/` | Claude Code の設定 (`CLAUDE.md`、サブエージェント定義): [claude/README.md](claude/README.md) |
 | `vscode/` | VS Code の `settings.json` と拡張機能インストーラ（各 OS から呼ばれる）: [vscode/README.md](vscode/README.md) |
 

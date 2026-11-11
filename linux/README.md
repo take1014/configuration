@@ -12,10 +12,10 @@ cd configuration/linux
 
 | 項目 | 内容 |
 |---|---|
-| Docker | Docker CE / QEMU（`--nvidia` で NVIDIA Container Toolkit も） |
+| Docker | Docker CE / Buildx・Compose プラグイン / QEMU（`qemu-user-static` の binfmt）（`--nvidia` で NVIDIA Container Toolkit も） |
 | VS Code | 本体、`settings.json`、拡張機能（`anthropic.claude-code` を含む） |
-| Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加）と、`CLAUDE.md` / サブエージェントの `~/.claude` への配置（[claude/README.md](../claude/README.md)） |
-| vim | ソースからビルド（Python3 対応）、vim-plug、プラグイン、jellybeans |
+| Claude Code | CLI（`~/.local/bin` を `~/.bashrc` の PATH に追加。zsh があれば `~/.zshrc` にも追加）と、`CLAUDE.md` / サブエージェントの `~/.claude` への配置（[claude/README.md](../claude/README.md)） |
+| vim | ソースからビルド（Python3 対応、`vi` は update-alternatives で vim に切り替え）、vim-plug、プラグイン、jellybeans |
 | dotfiles | `~/.bashrc` に `linux/.bashrc` を**追記**、zsh があれば `~/.zshrc` に `linux/.zshrc` を**追記**、`~/.tmux.conf` に `linux/.tmux.conf` を**コピー**（tmux / xsel も導入） |
 
 - スクリプト全体を `sudo` で実行する必要はありません（内部で必要な箇所だけ `sudo` を使います）。
@@ -97,7 +97,7 @@ Python開発環境をセットアップします。
 - **Poetry**: Python パッケージ管理ツール
 - 開発に必要なライブラリの自動インストール
 
-**.bashrc自動編集** により、bashシェルで以下が有効化されます：
+**.bashrc自動編集**: `.bashrc_pyenv` を `# >>> configuration: .bashrc_pyenv >>>` 〜 `# <<< ... <<<` のブロックとして `~/.bashrc` に追記します（再実行時はブロックだけ置き換え）。bashシェルで以下が有効化されます：
 ```bash
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
@@ -111,6 +111,8 @@ chmod +x pyenv_setup_for_linux.sh
 ./pyenv_setup_for_linux.sh
 source ~/.bashrc  # 設定を反映
 ```
+
+注意: 旧版のスクリプトで設定済みのマシンでは、初回実行でブロックが追加され内容が二重になります。`~/.bashrc` の古い手動分（`# pyenv` 以下の4行）を削除してください。
 
 ---
 

@@ -3,18 +3,7 @@
 #   powershell -ExecutionPolicy Bypass -File .\install_all.ps1
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
-
-# Copy $src to $dst. Do nothing if identical; otherwise overwrite (no backup).
-function Copy-IfChanged($src, $dst) {
-    if (Test-Path $dst) {
-        if ((Get-FileHash $src).Hash -eq (Get-FileHash $dst).Hash) {
-            Write-Host "up to date: $dst"
-            return
-        }
-    }
-    Copy-Item $src $dst -Force
-    Write-Host "copied: $dst"
-}
+. (Join-Path $PSScriptRoot '..\common\lib.ps1')
 
 # Install the CLI + place CLAUDE.md / agents
 & "..\claude\install.ps1"
@@ -27,6 +16,9 @@ if (-not (Get-Command vim -ErrorAction SilentlyContinue)) {
 New-Item "$HOME/vimfiles/autoload" -ItemType Directory -Force | Out-Null
 iwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | ni "$HOME/vimfiles/autoload/plug.vim" -Force
 Copy-IfChanged ".\.vimrc" "$HOME\.vimrc"
+if (-not (Get-Command ag -ErrorAction SilentlyContinue)) {
+    Write-Host "[WARN] 'ag' (the_silver_searcher) not found; :Ag is unavailable in vim. Install it (e.g. 'scoop install ag') to enable it."
+}
 vim -c PlugInstall -c q -c q!
 New-Item "$HOME/vimfiles/colors" -ItemType Directory -Force | Out-Null
 Copy-Item -Path "$HOME/.vim/plugged/jellybeans.vim/colors/jellybeans.vim" -Destination "$HOME/vimfiles/colors/" -Force
@@ -38,6 +30,7 @@ Copy-IfChanged "..\vscode\settings.json" "$env:APPDATA\Code\User\settings.json"
 Write-Host "== VS Code extensions =="
 if (Get-Command code -ErrorAction SilentlyContinue) {
     & "..\vscode\install.ps1"
+    if ($LASTEXITCODE -ne 0) { Write-Host "[WARN] Some VS Code extensions failed to install (see above)." }
 } else {
     Write-Host "'code' command not found. Run 'Shell Command: Install code command in PATH' from the VS Code command palette, then run ..\vscode\install.ps1."
 }

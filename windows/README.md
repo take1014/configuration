@@ -19,8 +19,9 @@ powershell -ExecutionPolicy Bypass -File .\install_all.ps1
 - VS Code の拡張機能インストールには `code` コマンドが必要です。
   無い場合は VS Code のコマンドパレットで `Shell Command: Install 'code' command in PATH` を実行し、
   `..\vscode\install.ps1` を単独で実行してください（`install_all.ps1` は案内を表示して続行します）。
+- `ag`（the_silver_searcher）は任意です。無い場合は警告のみで、vim の `:Ag` コマンドは使えません（`scoop install ag` などで入れると有効になります）。パターンを囲むときはダブルクォートを使ってください（例: `:Ag "foo bar"`。cmd.exe はシングルクォートを引用符として扱いません）。
 - 管理者権限は不要です。
 
 ## 補足
-- 再実行しても安全です（ディレクトリは `-Force` で作成、ファイルは上書き）。
+- 再実行しても安全です（ディレクトリは `-Force` で作成、ファイルは上書き）。VS Code 拡張機能はインストール済みならスキップします。
 - フォント: [Inconsolata](https://fonts.google.com/specimen/Inconsolata) / [Migu-1M](https://mix-mplus-ipa.osdn.jp/migu/)

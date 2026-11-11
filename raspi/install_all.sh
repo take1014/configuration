@@ -13,8 +13,8 @@ sudo apt-get update
 sudo apt-get full-upgrade -y
 sudo apt-get install -y vim tmux git curl silversearcher-ag xsel python3-dev python3-venv
 
-# vi -> vim
-sudo ln -sf /usr/bin/vim /usr/bin/vi
+# vi -> vim (vim.basic is registered as a vi alternative by the apt vim package)
+sudo update-alternatives --set vi /usr/bin/vim.basic
 
 echo "== vim plugins =="
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

@@ -19,8 +19,6 @@ Plug 'mattn/vim-lsp-settings'
 " auto complete
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
-" grep
-Plug 'rking/ag.vim'
 " hightlight
 Plug 'sheerun/vim-polyglot'
 " autocomplete '',"",() etc...
@@ -35,9 +33,27 @@ let g:lsp_document_highlight_enabled = 0
 let g:lsp_diagnostics_enabled = 0         " disable diagnostics support
 let g:lsp_signs_enabled = 0
 
+" grep: use ag (the_silver_searcher) for :grep and :Ag when available
+if executable('ag')
+  set grepprg=ag\ --vimgrep
+  set grepformat=%f:%l:%c:%m
+  " :Ag passes its arguments to ag as-is (no %/# expansion, | is not a command separator)
+  function! s:Ag(args) abort
+    let l:efm = &errorformat
+    let &errorformat = &grepformat
+    try
+      cgetexpr system(&grepprg . ' ' . a:args)
+    finally
+      let &errorformat = l:efm
+    endtry
+    cwindow
+  endfunction
+  command! -nargs=+ Ag call s:Ag(<q-args>)
+endif
+
 set termguicolors
 set nocompatible
-colorscheme jellybeans
+silent! colorscheme jellybeans
 set number
 set guifont=Inconsolata:h8
 set guifontwide=Migu\ 1M:h8

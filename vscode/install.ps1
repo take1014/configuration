@@ -64,13 +64,21 @@ if (-not (Get-Command code -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
+# Skip extensions that are already installed (-contains is case-insensitive)
+$installed = @(code --list-extensions)
+$failed = @()
 foreach ($extension in $extensions) {
-    Write-Host "Installing $extension ..."
-    $result = code --install-extension $extension 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[ERROR] Failed to install $extension."
-        Write-Host $result
+    if ($installed -contains $extension) {
+        Write-Host "Skip (already installed): $extension"
+        continue
     }
+    Write-Host "Installing $extension ..."
+    code --install-extension $extension
+    if ($LASTEXITCODE -ne 0) { $failed += $extension }
 }
 
-Write-Host "`nAll extensions processed."
+if ($failed.Count -gt 0) {
+    Write-Host "Failed: $($failed -join ' ')"
+    exit 1
+}
+Write-Host "`nAll extensions installed."

@@ -1,6 +1,6 @@
 # common
 
-Linux / macOS / Raspberry Pi のセットアップスクリプトから共通で使うシェル関数をまとめたフォルダです。
+セットアップスクリプトから共通で使う関数をまとめたフォルダです（`lib.sh`: Linux / macOS / Raspberry Pi、`lib.ps1`: Windows）。
 単体で実行するものではありません。
 
 ## lib.sh の役割
@@ -14,6 +14,7 @@ Linux / macOS / Raspberry Pi のセットアップスクリプトから共通で
 | `mac/install_all.sh` | `.zshrc` の追記、`.vimrc` / `.tmux.conf` / VS Code `settings.json` のコピー |
 | `raspi/install_all.sh` | `.bashrc` の追記、`.vimrc` / `.tmux.conf` のコピー |
 | `claude/install.sh` | `CLAUDE.md` とサブエージェント定義を `~/.claude` にコピー |
+| `linux/pyenv_setup_for_linux.sh` | `.bashrc_pyenv` を `~/.bashrc` に追記 |
 
 各スクリプトは自分のフォルダに `cd` した状態で次のように読み込みます（相対パスなので、リポジトリ全体を clone しておく必要があります）。
 
@@ -21,7 +22,7 @@ Linux / macOS / Raspberry Pi のセットアップスクリプトから共通で
 source ../common/lib.sh
 ```
 
-Windows は PowerShell の `install_all.ps1` 内に同等の処理（`Copy-IfChanged`）があり、`lib.sh` は使いません。
+Windows は `lib.sh` の代わりに `lib.ps1` を使います（下記）。
 
 ## 関数
 
@@ -38,9 +39,22 @@ Windows は PowerShell の `install_all.ps1` 内に同等の処理（`Copy-IfCha
 - マーカー名には `<src>` のファイル名が入ります。
 - 同じマーカーのブロックがすでにあれば、そのブロックだけを削除して最新内容を末尾に書き直します（重複しません）。ブロック外の内容はそのまま残ります。
 - `<dest>` が無ければ作成します。
+- 開始マーカーがあるのに終了マーカーが無い場合は、エラーを表示して何も変更せず終了します（手動で直してください）。
+- `<dest>` は置き換えずにその場で書き戻すため、シンボリックリンクやパーミッションは保たれます。
 
 ### `copy_file <src> <dest>`
 `<src>` を `<dest>` にコピーします。
 
 - 内容が同じなら何もしません（`up to date` と表示）。
 - 内容が違えば**バックアップを取らずに上書き**します。`<dest>` 側で手で変えた内容は消えるので、変更はリポジトリ側で行ってください。
+
+## lib.ps1（Windows）
+Windows の PowerShell スクリプトからドットソースして使います。
+
+| スクリプト | 読み込み方 |
+|---|---|
+| `windows/install_all.ps1` | `. (Join-Path $PSScriptRoot '..\common\lib.ps1')` |
+| `claude/install.ps1` | 同上 |
+
+### `Copy-IfChanged <src> <dst>`
+`copy_file` の PowerShell 版です。`<src>` を `<dst>` にコピーし、内容が同じなら何もしません（`up to date` と表示）。違えばバックアップなしで上書きします。

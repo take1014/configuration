@@ -34,7 +34,7 @@ VS Code の設定と拡張機能を揃えるためのファイル群です。
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-- `install.sh` はインストール済みの拡張をスキップし、失敗した拡張は最後にまとめて表示します。
+- `install.sh` / `install.ps1` はインストール済みの拡張をスキップし、失敗した拡張は最後にまとめて表示します。
 - 再実行しても安全です。
 
 ## 主な拡張機能

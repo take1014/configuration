@@ -6,17 +6,7 @@
 # - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 param([switch]$ConfigOnly)
 $ErrorActionPreference = 'Stop'
-
-function Copy-IfChanged($src, $dst) {
-    if (Test-Path $dst) {
-        if ((Get-FileHash $src).Hash -eq (Get-FileHash $dst).Hash) {
-            Write-Host "up to date: $dst"
-            return
-        }
-    }
-    Copy-Item $src $dst -Force
-    Write-Host "copied: $dst"
-}
+. (Join-Path $PSScriptRoot '..\common\lib.ps1')
 
 if (-not $ConfigOnly) {
     Write-Host "== Claude Code (CLI) =="

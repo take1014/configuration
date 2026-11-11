@@ -17,23 +17,28 @@ WITH_NVIDIA=0
 install_docker() (
     set -euo pipefail
     ARCH="$(dpkg --print-architecture)"
+    CODENAME="$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")"
 
     echo "== Install Docker =="
+    # Remove the repo entry/keyring written by older versions of this script
+    # (a different Signed-By for the same repo makes every apt-get update fail)
+    sudo rm -f /etc/apt/sources.list.d/docker.list /usr/share/keyrings/docker-archive-keyring.gpg
     sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    sudo install -m 0755 -d /usr/share/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo "deb [arch=${ARCH} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    sudo apt-get install -y ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${CODENAME} stable" \
         | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     sudo systemctl enable --now docker
     sudo docker --version
     sudo usermod -aG docker "$USER"
 
-    echo "== Install QEMU =="
+    echo "== Install QEMU (binfmt for multi-arch containers) =="
+    # Ubuntu's qemu-user-static registers binfmt handlers persistently; no helper container needed
     sudo apt-get install -y qemu-user-static binfmt-support
-    sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
     if [ "$WITH_NVIDIA" -eq 1 ]; then
         # https://highreso.jp/edgehub/machinelearning/ubuntudocker.html#index_id7
@@ -81,7 +86,7 @@ install_vim() (
     # Deactivate any Conda environment beforehand!
     echo "== Build & install vim =="
     sudo apt-get update
-    sudo apt-get install -y git tmux python3-dev python3-venv libncurses5-dev libx11-dev \
+    sudo apt-get install -y git tmux python3-dev python3-venv libncurses-dev libx11-dev \
         libxtst-dev libxt-dev libsm-dev libxpm-dev silversearcher-ag curl build-essential
 
     # Japanese folder name -> English folder name
@@ -110,8 +115,9 @@ install_vim() (
         sudo make install
     )
 
-    # change symbolic link for vi
-    sudo ln -sf /usr/local/bin/vim /usr/bin/vi
+    # Point vi to the built vim via alternatives (do not overwrite /usr/bin/vi directly)
+    sudo update-alternatives --install /usr/bin/vi vi /usr/local/bin/vim 100
+    sudo update-alternatives --set vi /usr/local/bin/vim
 
     # install plugins
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -141,7 +147,10 @@ run() {
     local name="$1"; shift
     echo
     echo "################ $name ################"
-    "$@" || failed+=("$name")
+    # Do not put "$@" on the left of || / && or inside if: that disables errexit in the step
+    "$@"
+    local rc=$?
+    [ "$rc" -eq 0 ] || failed+=("$name")
 }
 
 run docker      install_docker

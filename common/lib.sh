@@ -5,18 +5,26 @@
 #   Append the contents of <src> to <dest> as a marker-delimited block.
 #   If the block already exists, replace only that block with the latest contents (no duplicates).
 append_block() {
-    local src="$1" dest="$2" name begin end replaced=0
+    local src="$1" dest="$2" name begin end tmp replaced=0
     name="$(basename "$src")"
     begin="# >>> configuration: ${name} >>>"
     end="# <<< configuration: ${name} <<<"
 
     touch "$dest"
     if grep -qxF "$begin" "$dest"; then
+        if ! grep -qxF "$end" "$dest"; then
+            echo "[ERROR] $dest has '$begin' but no matching end marker; fix it manually." >&2
+            return 1
+        fi
+        tmp="$(mktemp)"
         awk -v b="$begin" -v e="$end" '
             $0 == b { skip = 1 }
             !skip   { print }
             $0 == e { skip = 0 }
-        ' "$dest" > "$dest.tmp" && mv "$dest.tmp" "$dest"
+        ' "$dest" > "$tmp"
+        # Write back in place (keeps symlinks and permissions of $dest)
+        cat "$tmp" > "$dest"
+        rm -f "$tmp"
         replaced=1
     fi
     {

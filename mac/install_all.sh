@@ -13,6 +13,13 @@ source ../common/lib.sh
 echo "== vim =="
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 copy_file ../linux/.vimrc ~/.vimrc
+if ! command -v ag >/dev/null 2>&1; then
+    if command -v brew >/dev/null 2>&1; then
+        brew install the_silver_searcher
+    else
+        echo "[WARN] ag (the_silver_searcher) is not installed and brew was not found. Please install it."
+    fi
+fi
 vim -c PlugInstall -c q -c q!
 mkdir -p ~/.vim/colors
 cp ~/.vim/plugged/jellybeans.vim/colors/jellybeans.vim ~/.vim/colors/

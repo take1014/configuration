@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # ============================================
 # TLP setup script for ThinkPad X13 Gen 5
@@ -29,8 +29,8 @@ set -e
 # ============================================
 
 echo "== Install TLP =="
-sudo apt update
-sudo apt install -y tlp
+sudo apt-get update
+sudo apt-get install -y tlp
 
 echo "== Disable power-profiles-daemon (conflict prevention) =="
 sudo systemctl stop power-profiles-daemon || true
@@ -38,7 +38,7 @@ sudo systemctl disable power-profiles-daemon || true
 
 echo "== Backup existing tlp.conf =="
 if [ -f /etc/tlp.conf ]; then
-    sudo cp /etc/tlp.conf /etc/tlp.conf.bak.$(date +%Y%m%d%H%M%S)
+    sudo cp /etc/tlp.conf "/etc/tlp.conf.bak.$(date +%Y%m%d%H%M%S)"
 fi
 
 echo "== Write tlp.conf =="
