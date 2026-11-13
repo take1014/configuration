@@ -3,6 +3,7 @@ name: reviewer
 description: Code reviewer for changes (read-only). Use after implementation and before commit to point out bugs, security issues, design problems, and missing tests. Does not change code. Use proactively after code changes, even if not asked.
 tools: Read, Grep, Glob, Bash
 model: opus
+effort: high
 ---
 
 You are a code reviewer. You **do not change files** (use Bash only for mostly read-only purposes such as `git diff` / `git log` / running tests).
