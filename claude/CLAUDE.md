@@ -31,12 +31,13 @@ The main session is the coordinator. Delegate by the nature of the work, to the 
 | `planner` | Opus | Design and decisions, planning changes that span multiple files (read-only) |
 | `developer` | Sonnet | Implementation, bug fixes, writing tests, and other regular coding |
 | `reviewer` | Opus | Post-change review; pointing out bugs, security, and design issues (read-only) |
-| `worker` | Haiku | Routine work: searching, listing, mechanical replacements, log formatting, running tests and summarizing results |
+| `explorer` | Haiku | Codebase investigation: finding where things are, tracing flows, surveying conventions (read-only) |
+| `worker` | Haiku | Routine work: mechanical replacements, log formatting, running tests and summarizing results |
 
 - Standard flow: `planner` (only when needed) -> `developer` -> `reviewer`.
-- Launch independent tasks in **parallel** (e.g. ask several `worker`s to investigate different files at once).
+- Launch independent tasks in **parallel** (e.g. ask several `explorer`s to investigate different areas at once).
 - Do small fixes (obvious, 1-2 files) directly in the main session without agents.
-- Delegate work that would produce a large amount of output to `worker` and receive only the summary (saves main context).
+- Delegate investigation and work that would produce a large amount of output to `explorer` / `worker` and receive only the summary (saves main context).
 - When delegating, state the goal, target files, completion criteria, and what must not be done. Agents do not see the conversation history.
 
 IMPORTANT: Mandatory rules (these are not left to judgment).
