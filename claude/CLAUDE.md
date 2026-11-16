@@ -34,8 +34,10 @@ The main session is the coordinator. Delegate by the nature of the work, to the 
 | `explorer` | Haiku | Codebase investigation: finding where things are, tracing flows, surveying conventions (read-only) |
 | `worker` | Haiku | Routine work: mechanical replacements, log formatting, running tests and summarizing results |
 | `researcher` | Sonnet | Web research: official docs, release notes, install procedures, deprecations, known issues (read-only) |
+| `debugger` | Opus | Finding the root cause of bugs and errors whose cause is unknown; reproduces and reports, does not fix |
 
 - Standard flow: `planner` (only when needed) -> `developer` -> `reviewer`.
+- For a bug whose cause is unknown: `debugger` -> `developer` -> `reviewer`.
 - Launch independent tasks in **parallel** (e.g. ask several `explorer`s to investigate different areas at once).
 - Do small fixes (obvious, 1-2 files) directly in the main session without agents.
 - Delegate investigation and work that would produce a large amount of output to `explorer` / `worker` / `researcher` and receive only the summary (saves main context).
