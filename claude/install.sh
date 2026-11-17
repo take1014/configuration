@@ -7,11 +7,30 @@ source ../common/lib.sh
 # Usage:
 #   ./install.sh                # install the CLI (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents) only
+#   ./install.sh --help         # show usage
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 
+usage() {
+    cat <<'USAGE'
+Usage: ./install.sh [--config-only] [-h|--help]
+
+  (no option)    install the CLI (only if not installed) + place config in ~/.claude
+  --config-only  place config (CLAUDE.md / agents) only; skip the CLI install
+  -h, --help     show this help
+
+Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~/.claude)
+USAGE
+}
+
 config_only=0
-[ "${1:-}" = "--config-only" ] && config_only=1
+for arg in "$@"; do
+    case "$arg" in
+        --config-only) config_only=1 ;;
+        -h|--help)     usage; exit 0 ;;
+        *)             echo "[ERROR] unknown option: $arg" >&2; usage >&2; exit 1 ;;
+    esac
+done
 
 install_cli() {
     echo "== Claude Code (CLI) =="

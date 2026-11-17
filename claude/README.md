@@ -20,10 +20,12 @@ Claude Code の **CLI 本体のインストール**と、グローバル設定 (
 ```bash
 ./install.sh                  # Linux / macOS / Raspberry Pi
 ./install.sh --config-only    # 設定の配置だけ (CLI のインストールを省略)
+./install.sh --help           # オプションの一覧
 ```
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install.ps1                # Windows
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定の配置だけ
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプションの一覧
 ```
 - CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
 - `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。

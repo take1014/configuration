@@ -2,10 +2,26 @@
 # Usage (PowerShell):
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI (only if not installed) + config
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # config files only
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # show usage
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
-param([switch]$ConfigOnly)
+[CmdletBinding()]
+param([switch]$ConfigOnly, [switch]$Help)
 $ErrorActionPreference = 'Stop'
+
+if ($Help) {
+    @'
+Usage: powershell -ExecutionPolicy Bypass -File .\install.ps1 [-ConfigOnly] [-Help]
+
+  (no option)  install the CLI (only if not installed) + place config in ~\.claude
+  -ConfigOnly  place config (CLAUDE.md / agents) only; skip the CLI install
+  -Help        show this help
+
+Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~\.claude)
+'@ | Write-Host
+    exit 0
+}
+
 . (Join-Path $PSScriptRoot '..\common\lib.ps1')
 
 if (-not $ConfigOnly) {
