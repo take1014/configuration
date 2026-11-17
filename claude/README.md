@@ -92,7 +92,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定�
 - **範囲を守る**: 頼まれたことだけを変更する。
 - **動作確認**: 完了前にテスト・実行で確認し、できなかったことは正直に報告する。
 - **安全**: commit / push / 削除は依頼されたときだけ。秘密情報に触れない。破壊的操作は事前に確認。
-- **文脈を節約**: 話題が変わったら `/clear`、長くなったら `/compact`。調査や大量出力の作業は `explorer` / `worker` / `researcher` に任せて要約だけ受け取る。
+- **文脈を節約**: 話題が変わったら `/clear`、長くなったら `/compact`。区切り(タスク完了・コミット後・話題の切り替わり前など)では Claude が `/clear` / `/compact` を提案する。調査や大量出力の作業は `explorer` / `worker` / `researcher` に任せて要約だけ受け取る。
 - **計画してから実装**: 大きな作業は Plan モードまたは `planner` で計画を作る。
 - **CLAUDE.md は短く**: プロジェクト固有のルールは、各リポジトリの `CLAUDE.md` に書く。
 

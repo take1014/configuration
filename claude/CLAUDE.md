@@ -52,5 +52,6 @@ IMPORTANT: Mandatory rules (these are not left to judgment).
 
 ## Context management
 - Use `/clear` when the topic changes and `/compact` when the conversation gets long.
+- At a natural breakpoint (a task finished and reported, a commit made, the topic about to change, or the conversation having grown long), briefly suggest `/clear` (next task is unrelated) or `/compact` (continuing related work). Suggest once at the end of the reply; do not interrupt mid-task or repeat it.
 - For large tasks, plan first and then implement (Plan mode / `planner`).
 - Keep this `CLAUDE.md` short. Put project-specific rules in each repository's own `CLAUDE.md`.
