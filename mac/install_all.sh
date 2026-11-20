@@ -40,6 +40,7 @@ echo "== VS Code settings =="
 vscode_dir="$HOME/Library/Application Support/Code/User"
 mkdir -p "$vscode_dir"
 copy_file ../vscode/settings.json "$vscode_dir/settings.json"
+../vscode/install-agents.sh
 
 echo "== VS Code extensions =="
 if command -v code >/dev/null 2>&1; then

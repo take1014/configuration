@@ -6,8 +6,11 @@ VS Code の設定と拡張機能を揃えるためのファイル群です。
 | ファイル | 内容 |
 |---|---|
 | `settings.json` | エディタ / vim 拡張 / テーマ / git などの設定 |
+| `copilot-instructions.md` | Copilot Chat のユーザー共通指示 |
+| `agents/*.agent.md` | Copilot Chat のカスタムエージェント定義 |
 | `install.sh` | 拡張機能の一括インストール (Linux / macOS) |
 | `install.ps1` | 拡張機能の一括インストール (Windows) |
+| `install-agents.sh` / `install-agents.ps1` | Copilot Chat の指示とエージェントをユーザー領域に配置 |
 
 ## 設定ファイル (`settings.json`) の配置先
 | OS | 配置先 |
@@ -43,6 +46,16 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 - **C/C++ / Go**: cpptools, CMake Tools, Go
 - **Remote**: Remote - SSH / Containers
 - **その他**: Vim, Material Icon Theme, Jellybeans テーマ, PDF / CSV ビューア など
+
+## Copilot Chat カスタムエージェント
+`install_all` は、個人向け指示ファイルとエージェント定義をユーザー領域の `~/.copilot/` に配置します。`install-agents.sh` / `install-agents.ps1` を単独で実行して配置することもできます。VS Code を再起動すると、設定したエージェントを Copilot Chat から利用できます。
+
+| OS | 配置先 |
+|---|---|
+| Linux / macOS | `~/.copilot/copilot-instructions.md`、`~/.copilot/agents/` |
+| Windows | `%USERPROFILE%\.copilot\copilot-instructions.md`、`%USERPROFILE%\.copilot\agents\` |
+
+エージェントは Claude 設定と同じ役割分担です。モデル名は Copilot Chat が認識するモデル名で指定しているため、契約や環境で利用できない場合は `agents/*.agent.md` の `model:` を VS Code のモデル選択に表示される名前に合わせてください。`reasoning-effort:` は Copilot が対応する場合に適用されます。
 
 ## 拡張機能の追加・削除
 `install.sh` と `install.ps1` の `extensions` リストを **両方** 編集してください（同じ内容に保ちます）。

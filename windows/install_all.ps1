@@ -26,6 +26,7 @@ Copy-Item -Path "$HOME/.vim/plugged/jellybeans.vim/colors/jellybeans.vim" -Desti
 Write-Host "== VS Code settings =="
 New-Item "$env:APPDATA\Code\User" -ItemType Directory -Force | Out-Null
 Copy-IfChanged "..\vscode\settings.json" "$env:APPDATA\Code\User\settings.json"
+& "..\vscode\install-agents.ps1"
 
 Write-Host "== VS Code extensions =="
 if (Get-Command code -ErrorAction SilentlyContinue) {

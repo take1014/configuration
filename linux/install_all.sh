@@ -70,6 +70,7 @@ install_vscode() (
 
     mkdir -p ~/.config/Code/User
     copy_file ../vscode/settings.json ~/.config/Code/User/settings.json
+    ../vscode/install-agents.sh
     ../vscode/install.sh
 )
 

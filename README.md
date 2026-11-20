@@ -51,6 +51,7 @@ cd raspi
 | vim + プラグイン | ✅ (ソースビルド) | ✅ | ✅ | ✅ (apt) |
 | VS Code 設定 + 拡張機能 | ✅ (本体も) | ✅ | ✅ | - |
 | `~/.claude` (CLAUDE.md / agents) | ✅ | ✅ | ✅ | ✅ |
+| `~/.copilot` (Copilot Chat 指示 / agents) | ✅ | ✅ | ✅ | - |
 | Docker | ✅ | - | - | - |
 | `.bashrc` / `.zshrc` 追記 | ✅ | ✅ (.zshrc) | - | ✅ (.bashrc) |
 | `.tmux.conf` コピー | ✅ | ✅ | - | ✅ |
@@ -79,7 +80,7 @@ cd raspi
 | `raspi/` | Raspberry Pi 用セットアップ |
 | `common/` | セットアップスクリプト共通の関数（`lib.sh`: 追記・コピー、`lib.ps1`: コピー）: [common/README.md](common/README.md) |
 | `claude/` | Claude Code の設定 (`CLAUDE.md`、サブエージェント定義): [claude/README.md](claude/README.md) |
-| `vscode/` | VS Code の `settings.json` と拡張機能インストーラ（各 OS から呼ばれる）: [vscode/README.md](vscode/README.md) |
+| `vscode/` | VS Code の設定・拡張機能・Copilot Chat カスタムエージェント: [vscode/README.md](vscode/README.md) |
 
 ## フォント
 VS Code の設定（`editor.fontFamily`）で使用します。事前にインストールしてください。
