@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Read-only design and planning for substantial work, multi-file changes, or meaningful design choices.
-model: "Claude Sonnet 4.5 (copilot)"
+model: "Claude Sonnet 5.5 (copilot)"
 reasoning-effort: medium
 tools: [read, search]
 ---

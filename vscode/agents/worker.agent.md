@@ -1,7 +1,7 @@
 ---
 name: worker
 description: Routine, well-scoped work such as mechanical edits, formatting, test execution, and concise result summaries.
-model: "Claude Haiku 4.5 (copilot)"
+model: "Claude Haiku 5.5 (copilot)"
 reasoning-effort: low
 tools: [read, search, edit, execute]
 ---

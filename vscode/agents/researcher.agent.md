@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: Read-only web research for official documentation, release notes, installation steps, deprecations, and known issues.
-model: "Claude Sonnet 4.5 (copilot)"
+model: "Claude Sonnet 5.5 (copilot)"
 reasoning-effort: medium
 tools: [web]
 ---

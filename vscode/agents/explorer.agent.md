@@ -1,7 +1,7 @@
 ---
 name: explorer
 description: Read-only codebase investigation to locate implementation, trace behavior, and find conventions.
-model: "Claude Haiku 4.5 (copilot)"
+model: "Claude Haiku 5.5 (copilot)"
 reasoning-effort: medium
 tools: [read, search]
 ---

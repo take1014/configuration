@@ -1,7 +1,7 @@
 ---
 name: developer
 description: Implement requested features, bug fixes, and tests when the scope and approach are clear.
-model: "Claude Sonnet 4.5 (copilot)"
+model: "Claude Sonnet 5.5 (copilot)"
 reasoning-effort: medium
 tools: [read, search, edit, execute]
 ---

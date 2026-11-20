@@ -1,7 +1,7 @@
 ---
 name: debugger
 description: Read-only root-cause investigation for bugs or errors whose cause is unknown; may run reproduction and diagnostic commands.
-model: "Claude Opus 4.6 (copilot)"
+model: "Claude Opus 5.5 (copilot)"
 reasoning-effort: high
 tools: [read, search, execute]
 ---

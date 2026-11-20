@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Read-only review for substantial, cross-cutting, security-sensitive, or otherwise high-risk changes.
-model: "Claude Opus 4.6 (copilot)"
+model: "Claude Opus 5.5 (copilot)"
 reasoning-effort: high
 tools: [read, search]
 ---
