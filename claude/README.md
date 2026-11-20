@@ -7,9 +7,9 @@ Claude Code の **CLI 本体のインストール**と、グローバル設定 (
 | ファイル | 配置先 | 内容 |
 |---|---|---|
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | 全プロジェクト共通のルール（日本語で回答・コード内は英語、安全、コーディング、エージェントの使い分け） |
-| `agents/planner.md` | `~/.claude/agents/` | 設計・計画担当 (Opus、読み取り専用) |
+| `agents/planner.md` | `~/.claude/agents/` | 設計・計画担当 (Sonnet、読み取り専用) |
 | `agents/developer.md` | 同上 | 実装担当 (Sonnet) |
-| `agents/reviewer.md` | 同上 | レビュー担当 (Opus、読み取り専用) |
+| `agents/reviewer.md` | 同上 | レビュー担当 (Opus、高リスク変更向け、読み取り専用) |
 | `agents/explorer.md` | 同上 | 調査担当 (Haiku、読み取り専用) |
 | `agents/worker.md` | 同上 | 定型作業担当 (Haiku) |
 | `agents/researcher.md` | 同上 | Web 調査担当 (Sonnet、Web 検索・取得のみ) |
@@ -40,21 +40,21 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
 | エージェント | モデル | effort | 役割 | 権限 |
 |---|---|---|---|---|
 | メイン | Sonnet | medium | 調整役（下記の個人設定で指定） | - |
-| `planner` | Opus | high | 設計・方針決定・実装計画 | 読み取りのみ |
+| `planner` | Sonnet | medium | 設計・方針決定・実装計画 | 読み取りのみ |
 | `developer` | Sonnet | medium | 実装・バグ修正・テスト作成 | 読み書き |
-| `reviewer` | Opus | high | 変更後のレビュー（バグ・セキュリティ・設計） | 読み取りのみ |
+| `reviewer` | Opus | high | 重要・高リスクな変更のレビュー（バグ・セキュリティ・設計） | 読み取りのみ |
 | `explorer` | Haiku | medium | コードの調査（どこに何があるか・処理の流れ・慣習の把握） | 読み取りのみ |
 | `worker` | Haiku | low | 機械的な置換・ログ整形・テスト実行と要約 | 読み書き（限定的な指示のみ） |
 | `researcher` | Sonnet | medium | Web 調査（公式ドキュメント・リリースノート・手順の変更・既知の問題） | Web 検索・取得のみ（ローカルのファイルは読まない） |
 | `debugger` | Opus | high | 原因が分からないバグ・エラーの再現と原因の特定（修正はしない） | 読み取り + 再現のためのコマンド実行 |
 
-- 標準の流れ: `planner`（大きい作業のときだけ）→ `developer` → `reviewer`
-- 原因が分からないバグ: `debugger` → `developer` → `reviewer`
+- 標準の流れ: `planner`（大きい作業のときだけ）→ `developer` → `reviewer`（重要・高リスクな変更のとき）
+- 原因が分からないバグ: `debugger` → `developer` → `reviewer`（変更が重要・高リスクなとき）
 
 ```
-あなた → メイン (Sonnet) ─┬→ planner    (Opus)   計画を作る
+あなた → メイン (Sonnet) ─┬→ planner    (Sonnet) 計画を作る
                            ├→ developer  (Sonnet) 実装する
-                           ├→ reviewer   (Opus)   レビューする
+                           ├→ reviewer   (Opus)   重要な変更をレビューする
                            ├→ explorer   (Haiku)  コードの調査 (複数を並列で)
                            ├→ worker     (Haiku)  定型作業 (複数を並列で)
                            ├→ researcher (Sonnet) Web 調査
@@ -70,7 +70,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
   - 「`debugger` でこのテストが落ちる原因を調べてから、`developer` で直して」
 - 説明文 (`description`) に基づいて、Claude が自動で委譲することもあります。
 - モデル指定は `opus` / `sonnet` / `haiku` の別名です。新しい世代が出たら自動で最新を使います。固定したい場合は `agents/*.md` の `model:` にモデル ID を書いてください。
-- `effort`（`low` / `medium` / `high` / `xhigh` / `max`）は考える量の指定で、`agents/*.md` の `effort:` がそのエージェントの動作中だけセッションの値を上書きします。判断の重い `planner` / `reviewer` / `debugger` は `high`、方針が決まった実装の `developer` は `medium`、調査の `explorer` は `medium`（どこを探すかの判断が要るため）、機械的な `worker` は `low`、Web 調査の `researcher` は `medium`（情報源の信頼性や新しさの判断が要るため）にしています。`effort:` を省略すると、メインと別モデルのエージェントにはセッションの値が引き継がれず、そのモデルの `modelSettings` の値か既定値で動きます。
+- `effort`（`low` / `medium` / `high` / `xhigh` / `max`）は考える量の指定で、`agents/*.md` の `effort:` がそのエージェントの動作中だけセッションの値を上書きします。`planner` は Sonnet / medium を標準にし、`reviewer` は Opus / high を重要・高リスクな変更に限って使います。原因特定が難しい `debugger` は Opus / high、方針が決まった実装の `developer` は Sonnet / medium、調査の `explorer` は Haiku / medium（どこを探すかの判断が要るため）、機械的な `worker` は Haiku / low、Web 調査の `researcher` は Sonnet / medium（情報源の信頼性や新しさの判断が要るため）にしています。`effort:` を省略すると、メインと別モデルのエージェントにはセッションの値が引き継がれず、そのモデルの `modelSettings` の値か既定値で動きます。
 
 ## 推奨する個人設定（`~/.claude/settings.json`、手動）
 このリポジトリでは管理しませんが、以下を使っています。
@@ -94,7 +94,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
 - **範囲を守る**: 頼まれたことだけを変更する。
 - **動作確認**: 完了前にテスト・実行で確認し、できなかったことは正直に報告する。
 - **安全**: commit / push / 削除は依頼されたときだけ。秘密情報に触れない。破壊的操作は事前に確認。
-- **文脈を節約**: 話題が変わったら `/clear`、長くなったら `/compact`。区切り(タスク完了・コミット後・話題の切り替わり前など)では Claude が `/clear` / `/compact` を提案する。調査や大量出力の作業は `explorer` / `worker` / `researcher` に任せて要約だけ受け取る。
+- **文脈を節約**: タスクが変わったら `/clear`、長時間の作業を中断するときは `/compact`。区切り(タスク完了・コミット後・話題の切り替わり前など)では Claude が `/clear` / `/compact` を提案する。調査や大量出力の作業は `explorer` / `worker` / `researcher` に任せて要約だけ受け取り、低リスクな小変更では `reviewer` を起動せず差分確認と対象を絞った検証を行う。
 - **計画してから実装**: 大きな作業は Plan モードまたは `planner` で計画を作る。
 - **CLAUDE.md は短く**: プロジェクト固有のルールは、各リポジトリの `CLAUDE.md` に書く。
 

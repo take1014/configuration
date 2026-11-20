@@ -28,16 +28,16 @@ The main session is the coordinator. Delegate by the nature of the work, to the 
 
 | Agent | Model | When to use |
 |---|---|---|
-| `planner` | Opus | Design and decisions, planning changes that span multiple files (read-only) |
+| `planner` | Sonnet | Design and decisions, planning changes that span multiple files (read-only) |
 | `developer` | Sonnet | Implementation, bug fixes, writing tests, and other regular coding |
-| `reviewer` | Opus | Post-change review; pointing out bugs, security, and design issues (read-only) |
+| `reviewer` | Opus | Post-change review for substantial or high-risk changes (read-only) |
 | `explorer` | Haiku | Codebase investigation: finding where things are, tracing flows, surveying conventions (read-only) |
 | `worker` | Haiku | Routine work: mechanical replacements, log formatting, running tests and summarizing results |
 | `researcher` | Sonnet | Web research: official docs, release notes, install procedures, deprecations, known issues (read-only) |
 | `debugger` | Opus | Finding the root cause of bugs and errors whose cause is unknown; reproduces and reports, does not fix |
 
-- Standard flow: `planner` (only when needed) -> `developer` -> `reviewer`.
-- For a bug whose cause is unknown: `debugger` -> `developer` -> `reviewer`.
+- Standard flow: `planner` (only when needed) -> `developer` -> `reviewer` (for substantial or high-risk changes).
+- For a bug whose cause is unknown: `debugger` -> `developer` -> `reviewer` (when the resulting change is substantial or high-risk).
 - Launch independent tasks in **parallel** (e.g. ask several `explorer`s to investigate different areas at once).
 - Do small fixes (obvious, 1-2 files) directly in the main session without agents.
 - Delegate investigation and work that would produce a large amount of output to `explorer` / `worker` / `researcher` and receive only the summary (saves main context).
@@ -46,7 +46,7 @@ The main session is the coordinator. Delegate by the nature of the work, to the 
 IMPORTANT: Mandatory rules (these are not left to judgment).
 "Code" below means programs, scripts, and config files that change behavior. Documentation, comments, and README-only changes are exempt.
 - If a code change will touch **3 or more code files**, or there are several possible approaches, run `planner` **before** editing.
-- If a change touched **any code file**, run `reviewer` on the diff **before** reporting completion or committing, whichever comes first. One review covers both, as long as the diff has not changed since.
+- Run `reviewer` on substantial, cross-cutting, security-sensitive, or otherwise high-risk code changes before reporting completion or committing, whichever comes first. For small, obvious, low-risk changes, inspect the diff and run focused checks directly instead. One review covers both, as long as the diff has not changed since.
 - Fix the `reviewer`'s findings (or explain why not) before committing.
 - In every completion report, state which agents were used, or why none were used.
 

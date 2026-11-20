@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Code reviewer for changes (read-only). Use after implementation and before commit to point out bugs, security issues, design problems, and missing tests. Does not change code. Use proactively after code changes, even if not asked.
+description: Code reviewer for substantial, cross-cutting, security-sensitive, or otherwise high-risk changes (read-only). Review the diff for bugs, security issues, design problems, and missing tests. Does not change code.
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high
