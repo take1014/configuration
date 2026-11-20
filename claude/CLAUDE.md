@@ -1,57 +1,37 @@
-# Global settings (~/.claude/CLAUDE.md)
+# Global settings (`~/.claude/CLAUDE.md`)
 
-## Language
-- Write **replies and explanations to the user in Japanese** (including plan and review summaries).
-- Write **code comments, script/program output (log and error messages), and documentation inside code in English**. Identifiers are English too.
-- Commit messages follow the language of the repository's existing history.
-- Project-specific files (e.g. a README already written in Japanese) keep their existing language.
+## Language and responses
+- Reply to the user in Japanese. Write code, identifiers, comments, logs, and in-code documentation in English; preserve the language of existing project docs.
+- Be concise and avoid repetition; prioritize code in code-generation tasks. Explain material decisions and report outcome, changed files, checks, and remaining risks without hiding failures or caveats.
 
-## Basics
-- Before changing anything, read the relevant code and existing conventions. Do not guess.
-- Change only what was asked. Do not refactor, add features, or create new files unless requested.
-- Ask a question only when the request is ambiguous and the answer changes the work. Otherwise proceed with a sensible default and report the decision.
-- Before declaring completion, **verify the behavior** by running tests, builds, or the code itself. If verification was not possible, say so honestly.
+## Working rules
+- Read only relevant code and conventions. Make the smallest correct change within scope; avoid unrelated refactors and dependencies.
+- Use only the relevant sections of task specifications; keep long specifications out of global instructions.
+- Run the smallest relevant verification. State skipped checks and unresolved issues.
+- Match existing shell-script conventions (`set -euo pipefail`, quote variables, idempotency). Ask only when ambiguity would materially change the work.
 
 ## Safety
-- Run `git commit` / `git push` / file deletion / sending data to external services **only when asked**.
-- Never read, write, print, or commit secrets (`.env`, keys, tokens).
-- Before destructive operations (`rm -rf`, `git reset --hard`, `git push --force`, etc.), check the target and get permission.
+- Do not read, write, print, or commit secrets.
+- Commit, push, delete files, or send data externally only when asked. Confirm targets before destructive operations.
 
-## Coding
-- Match the existing style, naming, and libraries. Propose new dependencies with a reason.
-- Keep diffs small and readable. Do not add unnecessary comments or defensive code.
-- Shell scripts: use `set -euo pipefail`, quote variables, and make them idempotent (safe to re-run).
+## Agents
+The main session coordinates agents; agents cannot launch other agents. Use only task-relevant tools/MCPs, and delegate only when expertise or independent work outweighs the added context.
 
-## Using subagents
-The main session is the coordinator. Delegate by the nature of the work, to the agents and models below.
-(Agents cannot launch other agents, so delegation is done from the main session.)
+| Agent | Use for |
+|---|---|
+| `planner` | Multi-file design or significant implementation choices (read-only) |
+| `developer` | Implementation and tests |
+| `reviewer` | Substantial, cross-cutting, security-sensitive, or high-risk changes (read-only) |
+| `explorer` | Broad codebase investigation (read-only) |
+| `worker` | Routine, mechanical work and focused command execution |
+| `researcher` | Web research (read-only) |
+| `debugger` | Unknown bug or error root cause (read-only investigation) |
 
-| Agent | Model | When to use |
-|---|---|---|
-| `planner` | Sonnet | Design and decisions, planning changes that span multiple files (read-only) |
-| `developer` | Sonnet | Implementation, bug fixes, writing tests, and other regular coding |
-| `reviewer` | Opus | Post-change review for substantial or high-risk changes (read-only) |
-| `explorer` | Haiku | Codebase investigation: finding where things are, tracing flows, surveying conventions (read-only) |
-| `worker` | Haiku | Routine work: mechanical replacements, log formatting, running tests and summarizing results |
-| `researcher` | Sonnet | Web research: official docs, release notes, install procedures, deprecations, known issues (read-only) |
-| `debugger` | Opus | Finding the root cause of bugs and errors whose cause is unknown; reproduces and reports, does not fix |
+- Use `planner` before editing when changing 3+ code files or when approaches materially differ. For small, obvious changes, work directly.
+- Run `reviewer` before reporting or committing high-risk changes; inspect small, low-risk changes directly. Resolve review findings before completion.
+- Delegate independent work in parallel only when useful. Give agents a narrow goal and request concise findings with file references.
+- In completion reports, state which agents were used or why none were needed.
 
-- Standard flow: `planner` (only when needed) -> `developer` -> `reviewer` (for substantial or high-risk changes).
-- For a bug whose cause is unknown: `debugger` -> `developer` -> `reviewer` (when the resulting change is substantial or high-risk).
-- Launch independent tasks in **parallel** (e.g. ask several `explorer`s to investigate different areas at once).
-- Do small fixes (obvious, 1-2 files) directly in the main session without agents.
-- Delegate investigation and work that would produce a large amount of output to `explorer` / `worker` / `researcher` and receive only the summary (saves main context).
-- When delegating, state the goal, target files, completion criteria, and what must not be done. Agents do not see the conversation history.
-
-IMPORTANT: Mandatory rules (these are not left to judgment).
-"Code" below means programs, scripts, and config files that change behavior. Documentation, comments, and README-only changes are exempt.
-- If a code change will touch **3 or more code files**, or there are several possible approaches, run `planner` **before** editing.
-- Run `reviewer` on substantial, cross-cutting, security-sensitive, or otherwise high-risk code changes before reporting completion or committing, whichever comes first. For small, obvious, low-risk changes, inspect the diff and run focused checks directly instead. One review covers both, as long as the diff has not changed since.
-- Fix the `reviewer`'s findings (or explain why not) before committing.
-- In every completion report, state which agents were used, or why none were used.
-
-## Context management
-- Use `/clear` when the topic changes and `/compact` when the conversation gets long.
-- At a natural breakpoint (a task finished and reported, a commit made, the topic about to change, or the conversation having grown long), briefly suggest `/clear` (next task is unrelated) or `/compact` (continuing related work). Suggest once at the end of the reply; do not interrupt mid-task or repeat it.
-- For large tasks, plan first and then implement (Plan mode / `planner`).
-- Keep this `CLAUDE.md` short. Put project-specific rules in each repository's own `CLAUDE.md`.
+## Context
+- Use `/clear` for unrelated topics and `/compact` for long related work; retain only decisions, affected files, and remaining work.
+- Keep project-specific rules in the project's `CLAUDE.md`.

@@ -14,8 +14,17 @@
 - Give agents a clear scope and ask for concise findings.
 
 ## Working practices
-- Read relevant code and conventions before changing anything. Change only the requested scope.
-- Verify changes with the smallest relevant test, build, or command. State clearly what could not be verified.
+- Read relevant code and conventions before changing anything; search narrowly and avoid rereading unchanged files or dumping large output.
+- Make the smallest correct change within the requested scope. Follow existing patterns; preserve APIs and data formats unless asked otherwise.
+- Read only task-relevant sections of specifications; keep long specifications out of global instructions.
+- Use only task-relevant tools and MCPs. Delegate only when expertise or independent work outweighs the added context; request concise findings with file references.
+- Run the smallest relevant verification and expand only when needed. Report failures and skipped checks accurately.
 - Do not commit, push, delete files, or send data externally unless asked.
 - Never read, write, or print secrets.
 - Ask for clarification when ambiguity would materially change the implementation.
+
+## Response style
+- Be concise, avoid repeating provided information, and prioritize code for code-generation tasks.
+- Explain decisions when they affect correctness, safety, or maintainability; do not omit important caveats or failed checks.
+- Report the outcome, changed files, checks and results, and remaining risks.
+- Keep one chat focused on one task; start a fresh chat for unrelated work and carry only key decisions and remaining work into long-task summaries.
