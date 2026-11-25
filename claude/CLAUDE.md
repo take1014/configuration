@@ -2,36 +2,26 @@
 
 ## Language and responses
 - Reply to the user in Japanese. Write code, identifiers, comments, logs, and in-code documentation in English; preserve the language of existing project docs.
-- Be concise and avoid repetition; prioritize code in code-generation tasks. Explain material decisions and report outcome, changed files, checks, and remaining risks without hiding failures or caveats.
+- Be concise and lead with the outcome; prioritize code in code-generation tasks. Explain material decisions and report changed files, checks, and remaining risks without hiding failures or caveats.
 
 ## Working rules
 - Read only relevant code and conventions. Make the smallest correct change within scope; avoid unrelated refactors and dependencies.
 - Use only the relevant sections of task specifications; keep long specifications out of global instructions.
-- Run the smallest relevant verification. State skipped checks and unresolved issues.
+- When versions or APIs matter, check the current documentation instead of assuming from memory.
+- Run the smallest relevant verification. Claim success only with evidence: the commands run and their key output. State skipped checks and unresolved issues.
+- After two failed attempts at the same fix, stop and suggest `/rewind` or `/clear` with a sharper prompt instead of piling on more attempts.
 - Match existing shell-script conventions (`set -euo pipefail`, quote variables, idempotency). Ask only when ambiguity would materially change the work.
 
 ## Safety
 - Do not read, write, print, or commit secrets.
 - Commit, push, delete files, or send data externally only when asked. Confirm targets before destructive operations.
 
-## Agents
-The main session coordinates agents; agents cannot launch other agents. Use only task-relevant tools/MCPs, and delegate only when expertise or independent work outweighs the added context.
-
-| Agent | Use for |
-|---|---|
-| `planner` | Multi-file design or significant implementation choices (read-only) |
-| `developer` | Implementation and tests |
-| `reviewer` | Substantial, cross-cutting, security-sensitive, or high-risk changes (read-only) |
-| `explorer` | Broad codebase investigation (read-only) |
-| `worker` | Routine, mechanical work and focused command execution |
-| `researcher` | Web research (read-only) |
-| `debugger` | Unknown bug or error root cause (read-only investigation) |
-
-- Use `planner` before editing when changing 3+ code files or when approaches materially differ. For small, obvious changes, work directly.
-- Run `reviewer` before reporting or committing high-risk changes; inspect small, low-risk changes directly. Resolve review findings before completion.
-- Delegate independent work in parallel only when useful. Give agents a narrow goal and request concise findings with file references.
-- In completion reports, state which agents were used or why none were needed.
+## Planning and delegation
+- Plan multi-file work in the main session (Plan mode) so the plan keeps the conversation's context. Work directly on small, obvious changes.
+- For hard tasks (materially different approaches, changes across 3+ modules or a public API, data migration, security, or compatibility), suggest that the user raise `/effort high` or `xhigh`, or add `ultrathink`, before planning.
+- Delegate only self-contained or parallel work, verbose output, or tool isolation; do not delegate what you can finish in a few tool calls. Give a narrow goal, restate constraints from the conversation, and request concise findings with file references. Use `isolation: "worktree"` for parallel agents that edit files.
+- Run `reviewer` before reporting or committing high-risk changes, and give it the request or spec to check against; inspect small, low-risk changes directly. Resolve review findings before completion.
 
 ## Context
-- Use `/clear` for unrelated topics and `/compact` for long related work; retain only decisions, affected files, and remaining work.
+- Suggest `/clear` before unrelated topics, and `/compact <focus>` (naming what to keep: decisions, affected files, remaining work) during long related work.
 - Keep project-specific rules in the project's `CLAUDE.md`.

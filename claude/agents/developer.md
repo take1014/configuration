@@ -1,6 +1,6 @@
 ---
 name: developer
-description: Developer for implementation, bug fixes, writing tests, and refactoring. Use for regular coding work where the spec and approach are already decided.
+description: Developer for implementation, bug fixes, writing tests, and refactoring. Use for self-contained or parallel coding work where the spec and approach are already decided; small or context-heavy changes are better done in the main session.
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
 effort: medium

@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Read-only design and planning for substantial work, multi-file changes, or meaningful design choices.
+description: Read-only, self-contained design or impact analysis that can run separately from the main conversation (for example, in parallel).
 model: "Claude Sonnet 5.5 (copilot)"
 reasoning-effort: medium
 tools: [read, search]

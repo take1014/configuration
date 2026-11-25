@@ -9,6 +9,8 @@ source ../common/lib.sh
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents) only
 #   ./install.sh --help         # show usage
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
+# - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
+#   A full install deletes only the listed obsolete agents (renamed or removed).
 # - settings.json holds personal settings (theme etc.), so it is neither managed nor overwritten.
 
 usage() {
@@ -77,7 +79,32 @@ install_config() {
     local dest="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
     mkdir -p "$dest/agents"
     copy_file ./CLAUDE.md "$dest/CLAUDE.md"
-    local f
+    # Remove stale agents before copying, so a case-only rename is not undone
+    # on case-insensitive file systems (macOS / Windows).
+    local f name src keep
+    if [ "$config_only" -eq 1 ]; then
+        # --config-only: mirror ./agents; remove every agent file that is not in this repository
+        for f in "$dest"/agents/*.md; do
+            [ -f "$f" ] || continue
+            name="$(basename "$f")"
+            keep=0
+            for src in ./agents/*.md; do
+                if [ "$(basename "$src")" = "$name" ]; then keep=1; break; fi
+            done
+            if [ "$keep" -eq 0 ]; then
+                rm -f "$f"
+                echo "removed: $f  (not in repository)"
+            fi
+        done
+    else
+        # Full install: remove only agents that were renamed or removed from this repository
+        for name in explorer.md; do
+            if [ -f "$dest/agents/$name" ]; then
+                rm -f "$dest/agents/$name"
+                echo "removed: $dest/agents/$name  (obsolete)"
+            fi
+        done
+    fi
     for f in ./agents/*.md; do
         copy_file "$f" "$dest/agents/$(basename "$f")"
     done
