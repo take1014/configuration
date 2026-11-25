@@ -2,7 +2,7 @@
 name: planner
 description: Planner for design and implementation plans (read-only). Use before work that spans multiple files, has several possible approaches, or needs impact analysis. Does not change code. Use proactively before starting large tasks.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 effort: medium
 ---
 
