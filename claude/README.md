@@ -90,7 +90,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
 - effort はモデルごとに `modelSettings.<モデルID>.effortLevel` で指定します（`/effort` で Enter を押すと自動で保存されます）。トップレベルの `effortLevel` は Opus 5.5 には効きません。`max` は保存できず、そのセッション限りです。新しいモデルに切り替えたときは、そのモデルIDで指定し直してください。
 - **advisor** は使いません（`advisorModel` は設定しない）。Opus のメインに付けられる advisor は Opus と Fable だけで、呼ばれるたびに会話全体をキャッシュなしで読み直すためです。リスクの高い変更は `reviewer` で確認します。
 - **permissions**: 「絶対にさせたくないこと」は `CLAUDE.md` ではなく設定で強制します（`CLAUDE.md` の指示は守られない場合があるため）。
-  - `deny`: 秘密情報（`.env`・認証情報）の読み取り、`sudo`、強制 push。deny はどのモード（auto を含む）でも有効です。`.env.example` は読めるようにパターンを絞っています。
+  - `deny`: 秘密情報（`.env`・認証情報）の読み取り、`sudo`、強制 push。deny はどのモード（auto を含む）でも有効です。対象は `.env`・`.env.local`・`.env.*.local`・`.env.production`・`.env.development`・`.env.staging`・`.env.test` と `secrets/` で、`.env.example` などのひな形は読めるようにしています。
   - `ask`: push・`git reset --hard`・`rm -rf` を確認対象にしています（auto モードでも確認が出るかは未検証）。
   - 限界: `Read` の deny が Bash にどこまで効くかは情報が分かれます。公式は「`cat .env` のような単純な読み取りは止めるが、ファイルを開くスクリプトは止めない」、Trail of Bits は「`/sandbox` なしでは Bash で回避できる」としています。Bash のルールも書かれたコマンドの形に一致するだけなので、`git -C . push` のような書き方は対象外です。徹底するなら `/sandbox` を併用します。
 - **enableAllProjectMcpServers: false**: リポジトリに含まれる `.mcp.json` の MCP サーバーを自動で有効にしません（悪意のあるサーバーを防ぐため）。
