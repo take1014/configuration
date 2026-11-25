@@ -1,6 +1,6 @@
 ---
 name: developer
-description: Implement requested features, bug fixes, and tests when the scope and approach are clear.
+description: Implement self-contained or parallel features, bug fixes, and tests when the scope and approach are clear; small or context-heavy changes are better done in the main conversation.
 model: "Claude Sonnet 5.5 (copilot)"
 reasoning-effort: medium
 tools: [read, search, edit, execute]

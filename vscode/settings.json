@@ -30,5 +30,12 @@
   "extensions.ignoreRecommendations": true,
   "git.autofetch": true,
   "git.confirmSync": false,
-  "git.enableSmartCommit": true
+  "git.enableSmartCommit": true,
+  "chat.tools.terminal.autoApprove": {
+    "git push": false,
+    "git reset --hard": false,
+    "rm -rf": false,
+    "rm -fr": false,
+    "sudo": false
+  }
 }
