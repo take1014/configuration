@@ -1,12 +1,13 @@
 # Claude Code 設定
 
-Claude Code の **CLI 本体のインストール**と、グローバル設定 (`CLAUDE.md`)・サブエージェント定義の配置をまとめたものです。
+Claude Code の **CLI 本体のインストール**と、グローバル設定 (`CLAUDE.md`・`settings.json`)・サブエージェント定義の配置をまとめたものです。
 各OSの `install_all.*` からこのフォルダのスクリプトが呼ばれます（単独で実行する場合は下記）。
 
 ## ファイル
 | ファイル | 配置先 | 内容 |
 |---|---|---|
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` | 全プロジェクト共通のルール（日本語で回答・コード内は英語、安全、コーディング、計画と委譲の方針） |
+| `settings.json` | `~/.claude/settings.json` | モデル・effort・権限ルール・ステータスラインなど（既存のファイルにマージ。上書きしない） |
 | `agents/planner.md` | `~/.claude/agents/` | 設計・計画担当 (Opus / high、切り離せる設計・影響調査向け、読み取り専用) |
 | `agents/developer.md` | 同上 | 実装担当 (Sonnet、切り離せる・並列の実装向け) |
 | `agents/reviewer.md` | 同上 | レビュー担当 (Opus、高リスク変更向け、読み取り専用) |
@@ -29,11 +30,16 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
 ```
 - CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
 - `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。
-- 内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。
+- `CLAUDE.md` と agents は、内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。
 - `--config-only` / `-ConfigOnly` では、配置先の `agents/*.md` のうちリポジトリに無いものをすべて削除してから上書きします（`/agents` で自分で作ったエージェントも消えるので注意）。`.md` 以外のファイルには触りません。
 - オプションなしのときは、改名・廃止したエージェント（現在は `explorer.md`）だけを削除します。
 - インストール後は Claude Code を再起動してください。`/agents` で一覧を確認できます。
-- `settings.json`（テーマなどの個人設定）は管理しません。上書きもしません。
+- `settings.json` は**どちらのモードでも上書きせずマージ**します（Claude Code 自身も `/effort` や `/model` などでこのファイルを書き換えるため）。
+  - ファイルが無ければ、リポジトリの `settings.json` をそのままコピーします。
+  - あれば、足りないキーだけを追加し、配列（`permissions.deny` など）には足りない項目だけを末尾に追加します。既にある値（`/effort` で選んだ effort やテーマなど）は変えません。
+  - 書き換えるときは `settings.json.bak` にバックアップを作ります。足りないものが無ければ何もしません。
+  - リポジトリから消したルールは既存のファイルからは消えません。手で削除してください。
+  - Linux・macOS では `jq` を使います（無ければ apt で入れます。apt が無い環境では警告を出してスキップ）。Windows は PowerShell の JSON 機能を使います。既存のファイルが壊れた JSON のときはエラーで止まり、ファイルには触りません。
 - `CLAUDE_CONFIG_DIR` を設定している場合は、そのディレクトリに配置します。
 
 ## エージェントとモデルの使い分け
@@ -77,34 +83,9 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
 - モデル指定は `opus` / `sonnet` / `haiku` の別名です。新しい世代が出たら自動で最新を使います。固定したい場合は `agents/*.md` の `model:` にモデル ID を書いてください。
 - `effort`（`low` / `medium` / `high` / `xhigh` / `max`）は考える量の指定で、`agents/*.md` の `effort:` がそのエージェントの動作中だけセッションの値を上書きします。`effort:` を省略すると、メインと別モデルのエージェントにはセッションの値が引き継がれず、そのモデルの `modelSettings` の値か既定値で動きます。
 
-## 推奨する個人設定（`~/.claude/settings.json`、手動）
-このリポジトリでは管理しませんが、以下を使っています（公式の設定例と Trail of Bits の設定を参考にしています）。
+## 個人設定（`settings.json`）
+`settings.json` の内容は、公式の設定例と Trail of Bits の設定を参考にしています。インストール時に `~/.claude/settings.json` にマージされます（上記）。好みの設定（テーマ、自動圧縮の範囲など）は `~/.claude/settings.json` 側に書けば、そのまま残ります。
 
-```json
-{
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "opus",
-  "modelSettings": {
-    "claude-opus-5-5": { "effortLevel": "medium" }
-  },
-  "permissions": {
-    "ask": ["Bash(git push)", "Bash(git push *)", "Bash(git reset --hard*)", "Bash(rm -rf *)", "Bash(rm -fr *)"],
-    "deny": [
-      "Read(**/.env)", "Read(**/.env.local)", "Read(**/.env.*.local)", "Read(**/.env.production)", "Read(**/secrets/**)",
-      "Read(~/.ssh/**)", "Read(~/.gnupg/**)", "Read(~/.aws/**)", "Read(~/.config/gh/**)", "Read(~/.git-credentials)",
-      "Read(~/.docker/config.json)", "Read(~/.kube/**)", "Read(~/.npmrc)", "Read(~/.pypirc)",
-      "Edit(~/.ssh/**)",
-      "Bash(sudo *)", "Bash(git push --force*)", "Bash(git push *--force*)"
-    ]
-  },
-  "enableAllProjectMcpServers": false,
-  "statusLine": {
-    "type": "command",
-    "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'",
-    "padding": 2
-  }
-}
-```
 - **モデル / effort**: メインは Opus / medium（Opus 5.5 の既定）。難しい作業は `/effort high`、長い自律的な作業は `/effort xhigh`、一回だけ深く考えさせたいときはプロンプトに `ultrathink` を入れます。`max` は考えすぎになりやすいので普段は使いません。
 - effort はモデルごとに `modelSettings.<モデルID>.effortLevel` で指定します（`/effort` で Enter を押すと自動で保存されます）。トップレベルの `effortLevel` は Opus 5.5 には効きません。`max` は保存できず、そのセッション限りです。新しいモデルに切り替えたときは、そのモデルIDで指定し直してください。
 - **advisor** は使いません（`advisorModel` は設定しない）。Opus のメインに付けられる advisor は Opus と Fable だけで、呼ばれるたびに会話全体をキャッシュなしで読み直すためです。リスクの高い変更は `reviewer` で確認します。
