@@ -21,6 +21,17 @@
 - For hard tasks (materially different approaches, changes across 3+ modules or a public API, data migration, security, or compatibility), suggest that the user raise `/effort high` or `xhigh`, or add `ultrathink`, before planning.
 - Delegate only self-contained or parallel work, verbose output, or tool isolation; do not delegate what you can finish in a few tool calls. Give a narrow goal, restate constraints from the conversation, and request concise findings with file references. Use `isolation: "worktree"` for parallel agents that edit files.
 - Run `reviewer` before reporting or committing high-risk changes, and give it the request or spec to check against; inspect small, low-risk changes directly. Resolve review findings before completion.
+- When a skill or plugin (e.g. superpowers) says to dispatch a `general-purpose` subagent, use the matching custom agent below instead, and keep the skill's prompt template as the prompt. Use `general-purpose` only when no row fits.
+
+| Dispatched for | Use |
+| --- | --- |
+| Code review, task review, re-review, final review | `reviewer` |
+| Implementing a task, fixing failures in parallel | `developer` (`isolation: "worktree"` when parallel) |
+| Builder check or an independent plan from a written design | `planner` |
+| Finding the root cause of a bug or failure | `debugger` |
+| Locating code or surveying the codebase | `Explore` |
+| Looking up docs, release notes, or known issues on the web | `researcher` |
+| Mechanical edits, running commands, summarizing logs | `worker` |
 
 ## Context
 - Suggest `/clear` before unrelated topics, and `/compact <focus>` (naming what to keep: decisions, affected files, remaining work) during long related work.
