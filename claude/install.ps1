@@ -1,8 +1,9 @@
-# Install Claude Code (CLI + CLAUDE.md / agents / settings.json) (Windows)
+# Install Claude Code (CLI + plugins + CLAUDE.md / agents / settings.json) (Windows)
 # Usage (PowerShell):
-#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI (only if not installed) + config
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI and plugins (only if not installed) + config
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # config files only
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # show usage
+# - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with -ConfigOnly.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
 #   A full install deletes only the listed obsolete agents (renamed or removed).
@@ -17,8 +18,8 @@ if ($Help) {
     @'
 Usage: powershell -ExecutionPolicy Bypass -File .\install.ps1 [-ConfigOnly] [-Help]
 
-  (no option)  install the CLI (only if not installed) + place config in ~\.claude
-  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI install
+  (no option)  install the CLI and plugins (only if not installed) + place config in ~\.claude
+  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI and plugin install
   -Help        show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~\.claude)
@@ -35,6 +36,36 @@ if (-not $ConfigOnly) {
         Write-Host "already installed: claude (run 'claude update' to upgrade)"
     } else {
         irm https://claude.ai/install.ps1 | iex
+    }
+
+    Write-Host "== Claude Code (plugins) =="
+    # Plugins to install: <plugin>@<marketplace> = <marketplace source>
+    $plugins = [ordered]@{
+        'caveman@caveman'                     = 'JuliusBrussee/caveman'
+        'superpowers@claude-plugins-official' = 'anthropics/claude-plugins-official'
+    }
+    $claudeBin = (Get-Command claude -ErrorAction SilentlyContinue).Source
+    if (-not $claudeBin -and (Test-Path $local)) { $claudeBin = $local }
+    if (-not $claudeBin) {
+        Write-Warning "claude not found; skipping plugin install."
+    } else {
+        $installed = @()
+        try {
+            $installed = @((& $claudeBin plugin list --json | Out-String | ConvertFrom-Json) | ForEach-Object { $_.id })
+        } catch { }
+        foreach ($id in $plugins.Keys) {
+            if ($installed -ccontains $id) {
+                Write-Host "already installed: $id"
+                continue
+            }
+            # --marketplace adds the marketplace first if it is not configured yet
+            & $claudeBin plugin install ($id -split '@')[0] --marketplace $plugins[$id] --scope user
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "installed: $id"
+            } else {
+                Write-Warning "failed to install plugin: $id"
+            }
+        }
     }
 }
 

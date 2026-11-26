@@ -3,11 +3,12 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Install Claude Code (CLI + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
+# Install Claude Code (CLI + plugins + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
 # Usage:
-#   ./install.sh                # install the CLI (only if not installed) + place config in ~/.claude
+#   ./install.sh                # install the CLI and plugins (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents / settings.json) only
 #   ./install.sh --help         # show usage
+# - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with --config-only.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
 #   A full install deletes only the listed obsolete agents (renamed or removed).
@@ -19,8 +20,8 @@ usage() {
     cat <<'USAGE'
 Usage: ./install.sh [--config-only] [-h|--help]
 
-  (no option)    install the CLI (only if not installed) + place config in ~/.claude
-  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI install
+  (no option)    install the CLI and plugins (only if not installed) + place config in ~/.claude
+  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI and plugin install
   -h, --help     show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~/.claude)
@@ -72,6 +73,38 @@ install_cli() {
         if ! grep -q '\.local/bin' "$rc" 2>/dev/null; then
             echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
             echo "updated: $rc  (PATH)"
+        fi
+    done
+}
+
+# Plugins to install, as "<plugin>@<marketplace> <marketplace source>"
+PLUGINS=(
+    "caveman@caveman JuliusBrussee/caveman"
+    "superpowers@claude-plugins-official anthropics/claude-plugins-official"
+)
+
+install_plugins() {
+    echo "== Claude Code (plugins) =="
+    local claude_bin entry id src installed
+    claude_bin="$(command -v claude 2>/dev/null || true)"
+    [ -n "$claude_bin" ] || [ ! -x "$HOME/.local/bin/claude" ] || claude_bin="$HOME/.local/bin/claude"
+    if [ -z "$claude_bin" ]; then
+        echo "[WARN] claude not found; skipping plugin install." >&2
+        return 0
+    fi
+    installed="$("$claude_bin" plugin list --json 2>/dev/null || true)"
+    for entry in "${PLUGINS[@]}"; do
+        id="${entry%% *}"
+        src="${entry#* }"
+        if printf '%s' "$installed" | grep -q "\"id\": *\"$id\""; then
+            echo "already installed: $id"
+            continue
+        fi
+        # --marketplace adds the marketplace first if it is not configured yet
+        if "$claude_bin" plugin install "${id%@*}" --marketplace "$src" --scope user; then
+            echo "installed: $id"
+        else
+            echo "[WARN] failed to install plugin: $id" >&2
         fi
     done
 }
@@ -160,7 +193,10 @@ install_config() {
     merge_settings ./settings.json "$dest/settings.json"
 }
 
-[ "$config_only" -eq 1 ] || install_cli
+if [ "$config_only" -eq 0 ]; then
+    install_cli
+    install_plugins
+fi
 install_config
 
 echo "Done. Restart Claude Code (or run /agents to verify)."
