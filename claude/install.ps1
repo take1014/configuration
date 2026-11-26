@@ -1,8 +1,10 @@
-# Install Claude Code (CLI + plugins + CLAUDE.md / agents / settings.json) (Windows)
+# Install Claude Code (CLI + Node.js + plugins + CLAUDE.md / agents / settings.json) (Windows)
 # Usage (PowerShell):
-#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI and plugins (only if not installed) + config
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI, Node.js and plugins (only if not installed) + config
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # config files only
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # show usage
+# - Node.js 18+ (needed by plugin hooks): latest LTS into ~\.local\opt only if no node is found (including an
+#   MSI / winget install); an older node only warns. Skipped with -ConfigOnly.
 # - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with -ConfigOnly.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
@@ -18,8 +20,8 @@ if ($Help) {
     @'
 Usage: powershell -ExecutionPolicy Bypass -File .\install.ps1 [-ConfigOnly] [-Help]
 
-  (no option)  install the CLI and plugins (only if not installed) + place config in ~\.claude
-  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI and plugin install
+  (no option)  install the CLI, Node.js and plugins (only if not installed) + place config in ~\.claude
+  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js and plugin install
   -Help        show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~\.claude)
@@ -36,6 +38,133 @@ if (-not $ConfigOnly) {
         Write-Host "already installed: claude (run 'claude update' to upgrade)"
     } else {
         irm https://claude.ai/install.ps1 | iex
+    }
+
+    Write-Host "== Node.js (for plugin hooks) =="
+    # Plugin hooks (e.g. caveman) run with node and silently do nothing without it; they need Node.js 18+.
+    # An existing node is reused, including one from the official installer (MSI) or winget that is only
+    # on the persisted PATH because this terminal was opened before it was installed.
+    # Otherwise install the latest LTS zip from nodejs.org into ~\.local\opt (no admin).
+    # Layout: ~\.local\opt\node-<ver>-<platform>, junction ~\.local\opt\node (added to the user PATH).
+    # Failures only warn, so the rest of the install continues.
+    $nodeMinMajor = 18
+    $optDir = Join-Path $HOME '.local\opt'
+    $nodeHome = Join-Path $optDir 'node'
+
+    # Find node.exe: this session's PATH, then the persisted Machine / User PATH, then the MSI default folder
+    function Find-Node {
+        $cmd = Get-Command node.exe -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($cmd) { return $cmd.Path }
+        $dirs = @(([Environment]::GetEnvironmentVariable('Path', 'Machine'),
+                   [Environment]::GetEnvironmentVariable('Path', 'User')) -join ';' -split ';') +
+                (Join-Path $env:ProgramFiles 'nodejs')
+        foreach ($d in $dirs) {
+            try {
+                $d = [Environment]::ExpandEnvironmentVariables($d).Trim('"')
+                if (-not $d) { continue }
+                $exe = [System.IO.Path]::Combine($d, 'node.exe')
+                if (Test-Path -LiteralPath $exe -PathType Leaf) { return $exe }
+            } catch { continue }  # malformed PATH entry
+        }
+        return $null
+    }
+
+    # Add $Dir to the user PATH via the registry, keeping REG_EXPAND_SZ and unexpanded %VARS%
+    function Add-UserPath([string]$Dir) {
+        # Compare expanded paths, so an entry written as %USERPROFILE%\... also matches
+        $norm = { [Environment]::ExpandEnvironmentVariables("$($args[0])").Trim('"').TrimEnd('\') }
+        $target = & $norm $Dir
+        $userPath = (Get-Item 'HKCU:\Environment').GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+        $entries = @($userPath -split ';' | Where-Object { $_ })
+        if (-not ($entries | Where-Object { (& $norm $_) -ieq $target })) {
+            Set-ItemProperty 'HKCU:\Environment' -Name Path -Value (($entries + $Dir) -join ';') -Type ExpandString
+            # Tell running programs (e.g. Explorer) that the environment changed
+            if (-not ('ClaudeInstall.NativeMethods' -as [type])) {
+                Add-Type -Namespace ClaudeInstall -Name NativeMethods -MemberDefinition @'
+[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
+    uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+'@
+            }
+            $result = [UIntPtr]::Zero
+            [ClaudeInstall.NativeMethods]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero,
+                'Environment', 2, 5000, [ref]$result) | Out-Null
+            Write-Host "updated: user PATH  (+ $Dir; open a new terminal to use it)"
+        }
+        if (-not (@($env:Path -split ';' | ForEach-Object { & $norm $_ }) -icontains $target)) {
+            $env:Path = "$env:Path;$Dir"
+        }
+    }
+
+    $nodeExe = Find-Node
+    if ($nodeExe) {
+        $nodeVer = $null
+        try { $nodeVer = "$(& $nodeExe --version | Select-Object -First 1)".Trim() } catch { }
+        if ($nodeVer -match '^v(\d+)\.' -and [int]$Matches[1] -ge $nodeMinMajor) {
+            Write-Host "already installed: node $nodeVer  ($nodeExe)"
+        } else {
+            # Not replaced automatically: a machine-wide node (MSI) comes before the user PATH,
+            # so another copy under ~\.local\opt would not take effect.
+            Write-Warning ("node $(if ($nodeVer) { $nodeVer } else { '(unknown version)' }) at $nodeExe is older than " +
+                "v$nodeMinMajor, which plugin hooks need. Upgrade it (e.g. 'winget upgrade OpenJS.NodeJS.LTS' " +
+                "or the installer from nodejs.org) and re-run.")
+        }
+    } elseif (Test-Path -LiteralPath (Join-Path $nodeHome 'node.exe') -PathType Leaf) {
+        # Installed by this script earlier, but its user PATH entry is gone: restore it
+        try {
+            Add-UserPath $nodeHome
+            Write-Host "already installed: node  ($nodeHome)"
+        } catch {
+            Write-Warning "failed to add $nodeHome to the user PATH: $($_.Exception.Message)"
+        }
+    } else {
+        $platform = switch ($env:PROCESSOR_ARCHITECTURE) {
+            'AMD64' { 'win-x64' }
+            'ARM64' { 'win-arm64' }
+            default { $null }
+        }
+        if (-not $platform) {
+            Write-Warning "$($env:PROCESSOR_ARCHITECTURE) is not supported; skipping Node.js install."
+        } else {
+            $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+            New-Item $tmp -ItemType Directory -Force | Out-Null
+            # Progress bars make Invoke-WebRequest / Expand-Archive very slow on Windows PowerShell 5.1
+            $savedProgress = $ProgressPreference
+            $ProgressPreference = 'SilentlyContinue'
+            try {
+                # Assign first: Windows PowerShell 5.1 sends a JSON array down the pipeline as one object
+                $index = Invoke-RestMethod https://nodejs.org/dist/index.json
+                $release = $index |
+                    Where-Object { $_.lts -and $_.files -contains "$platform-zip" } |
+                    Select-Object -First 1
+                if (-not $release) { throw "could not determine the Node.js LTS version" }
+                $ver = $release.version
+                $name = "node-$ver-$platform"
+                $zip = Join-Path $tmp "$name.zip"
+                Invoke-WebRequest "https://nodejs.org/dist/$ver/$name.zip" -OutFile $zip -UseBasicParsing
+                $sums = (Invoke-WebRequest "https://nodejs.org/dist/$ver/SHASUMS256.txt" -UseBasicParsing).Content
+                $expected = ($sums -split "`n" | Where-Object { $_ -match "^([0-9a-f]{64})\s+$([regex]::Escape("$name.zip"))\s*$" } |
+                    Select-Object -First 1) -replace '\s.*$', ''
+                if (-not $expected -or (Get-FileHash $zip -Algorithm SHA256).Hash -ine $expected) {
+                    throw "checksum mismatch for $name.zip"
+                }
+                New-Item $optDir -ItemType Directory -Force | Out-Null
+                Expand-Archive $zip -DestinationPath $optDir -Force
+                # Junction (no admin needed) so the PATH entry survives version upgrades
+                # Get-Item -Force also finds a broken junction (Test-Path returns False for it on PS 5.1).
+                # DirectoryInfo.Delete() removes only the junction, not its target.
+                $oldLink = Get-Item -LiteralPath $nodeHome -Force -ErrorAction SilentlyContinue
+                if ($oldLink) { $oldLink.Delete() }
+                New-Item $nodeHome -ItemType Junction -Value (Join-Path $optDir $name) | Out-Null
+                Add-UserPath $nodeHome
+                Write-Host "installed: node $ver  ($(Join-Path $optDir $name))"
+            } catch {
+                Write-Warning "failed to install Node.js: $($_.Exception.Message)"
+            } finally {
+                $ProgressPreference = $savedProgress
+                Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
     }
 
     Write-Host "== Claude Code (plugins) =="

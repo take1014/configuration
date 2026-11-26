@@ -3,11 +3,12 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Install Claude Code (CLI + plugins + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
+# Install Claude Code (CLI + Node.js + plugins + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
 # Usage:
-#   ./install.sh                # install the CLI and plugins (only if not installed) + place config in ~/.claude
+#   ./install.sh                # install the CLI, Node.js and plugins (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents / settings.json) only
 #   ./install.sh --help         # show usage
+# - Node.js 18+ (needed by plugin hooks): latest LTS into ~/.local/opt unless node 18+ exists; skipped with --config-only.
 # - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with --config-only.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
@@ -20,8 +21,8 @@ usage() {
     cat <<'USAGE'
 Usage: ./install.sh [--config-only] [-h|--help]
 
-  (no option)    install the CLI and plugins (only if not installed) + place config in ~/.claude
-  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI and plugin install
+  (no option)    install the CLI, Node.js and plugins (only if not installed) + place config in ~/.claude
+  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js and plugin install
   -h, --help     show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~/.claude)
@@ -75,6 +76,107 @@ install_cli() {
             echo "updated: $rc  (PATH)"
         fi
     done
+}
+
+# install_node
+#   Install the latest Node.js LTS from nodejs.org into ~/.local/opt (no sudo), unless node 18+ exists.
+#   Plugin hooks (e.g. caveman) run with node and silently do nothing without it; they need Node.js 18+.
+#   An older node (e.g. from apt on Raspberry Pi OS) is left as is; ~/.local/bin comes first in PATH.
+#   Layout: ~/.local/opt/node-<ver>-<platform>, linked as ~/.local/opt/node; bin links in ~/.local/bin.
+#   Failures only warn, so the rest of the install continues.
+NODE_MIN_MAJOR=18
+install_node() {
+    echo "== Node.js (for plugin hooks) =="
+    local bin_dir="$HOME/.local/bin" opt_dir="$HOME/.local/opt" os arch platform ver file tmp sum b
+    local node_cmd node_ver node_major
+    node_cmd="$(command -v node 2>/dev/null || true)"
+    if [ -z "$node_cmd" ] && [ -x "$bin_dir/node" ]; then
+        node_cmd="$bin_dir/node"
+    fi
+    if [ -n "$node_cmd" ]; then
+        node_ver="$("$node_cmd" --version 2>/dev/null || true)"
+        node_major="${node_ver#v}"
+        node_major="${node_major%%.*}"
+        if [[ "$node_major" =~ ^[0-9]+$ ]] && [ "$node_major" -ge "$NODE_MIN_MAJOR" ]; then
+            echo "already installed: node $node_ver  ($node_cmd)"
+            return 0
+        fi
+        echo "[WARN] node ${node_ver:-(unknown version)} at $node_cmd is older than v$NODE_MIN_MAJOR," \
+            "which plugin hooks need; installing the LTS into $opt_dir." >&2
+    fi
+    case "$(uname -s)" in
+        Linux)  os=linux ;;
+        Darwin) os=darwin ;;
+        *) echo "[WARN] $(uname -s) is not supported; skipping Node.js install." >&2; return 0 ;;
+    esac
+    case "$(uname -m)" in
+        x86_64)        arch=x64 ;;
+        aarch64|arm64) arch=arm64 ;;
+        *) echo "[WARN] $(uname -m) is not supported; skipping Node.js install (64-bit OS required)." >&2
+           return 0 ;;
+    esac
+    platform="$os-$arch"
+    # ln -sfn would create the link inside a real directory instead of replacing it
+    if [ -e "$opt_dir/node" ] && [ ! -L "$opt_dir/node" ]; then
+        echo "[WARN] $opt_dir/node exists and is not a symlink; skipping Node.js install (remove it and re-run)." >&2
+        return 0
+    fi
+
+    tmp="$(mktemp -d)"
+    # index.json lists one release per line, newest first; LTS releases have "lts":"<codename>"
+    # (downloaded to a file first, so an early-exiting grep cannot fail the pipeline via SIGPIPE)
+    ver=""
+    if curl -fsSL -o "$tmp/index.json" https://nodejs.org/dist/index.json; then
+        ver="$(grep -m1 '"lts":"' "$tmp/index.json" | sed -E 's/.*"version":"(v[0-9.]+)".*/\1/' || true)"
+    fi
+    if ! printf '%s' "$ver" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+        echo "[WARN] could not determine the Node.js LTS version; skipping Node.js install." >&2
+        rm -rf "$tmp"
+        return 0
+    fi
+    file="node-$ver-$platform.tar.gz"
+
+    if ! curl -fsSL -o "$tmp/$file" "https://nodejs.org/dist/$ver/$file" \
+        || ! curl -fsSL -o "$tmp/SHASUMS256.txt" "https://nodejs.org/dist/$ver/SHASUMS256.txt"; then
+        echo "[WARN] failed to download Node.js $ver; skipping Node.js install." >&2
+        rm -rf "$tmp"
+        return 0
+    fi
+    if command -v sha256sum >/dev/null 2>&1; then
+        sum="$(sha256sum "$tmp/$file" | cut -d' ' -f1)"
+    elif command -v shasum >/dev/null 2>&1; then
+        sum="$(shasum -a 256 "$tmp/$file" | cut -d' ' -f1)"
+    else
+        echo "[WARN] sha256sum / shasum not found; skipping Node.js install." >&2
+        rm -rf "$tmp"
+        return 0
+    fi
+    if ! grep -qxF "$sum  $file" "$tmp/SHASUMS256.txt"; then
+        echo "[WARN] checksum mismatch for $file; skipping Node.js install." >&2
+        rm -rf "$tmp"
+        return 0
+    fi
+
+    if ! mkdir -p "$opt_dir" "$bin_dir" || ! tar -xzf "$tmp/$file" -C "$opt_dir"; then
+        echo "[WARN] failed to extract $file into $opt_dir; skipping Node.js install." >&2
+        rm -rf "$tmp"
+        return 0
+    fi
+    rm -rf "$tmp"
+    if ! ln -sfn "$opt_dir/node-$ver-$platform" "$opt_dir/node"; then
+        echo "[WARN] failed to link $opt_dir/node; skipping Node.js install." >&2
+        return 0
+    fi
+    for b in node npm npx corepack; do
+        [ -e "$opt_dir/node/bin/$b" ] || continue
+        # Never overwrite a real file that this script did not create
+        if [ -e "$bin_dir/$b" ] && [ ! -L "$bin_dir/$b" ]; then
+            echo "[WARN] $bin_dir/$b exists and is not a symlink; not linking it." >&2
+        elif ! ln -sfn "$opt_dir/node/bin/$b" "$bin_dir/$b"; then
+            echo "[WARN] failed to link $bin_dir/$b" >&2
+        fi
+    done
+    echo "installed: node $ver  ($opt_dir/node-$ver-$platform)"
 }
 
 # Plugins to install, as "<plugin>@<marketplace> <marketplace source>"
@@ -195,6 +297,7 @@ install_config() {
 
 if [ "$config_only" -eq 0 ]; then
     install_cli
+    install_node
     install_plugins
 fi
 install_config

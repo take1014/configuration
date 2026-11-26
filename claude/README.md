@@ -15,7 +15,7 @@ Claude Code の **CLI 本体のインストール**と、グローバル設定 (
 | `agents/worker.md` | 同上 | 定型作業担当 (Haiku) |
 | `agents/researcher.md` | 同上 | Web 調査担当 (Sonnet、Web 検索・取得のみ) |
 | `agents/debugger.md` | 同上 | 原因調査担当 (Opus、修正はしない) |
-| `install.sh` / `install.ps1` | - | CLI 本体のインストール + PATH 設定 + 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
+| `install.sh` / `install.ps1` | - | CLI 本体・Node.js・プラグインのインストール + PATH 設定 + 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
 
 ## インストール
 ```bash
@@ -29,6 +29,15 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定�
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプションの一覧
 ```
 - CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
+- Node.js 18 以上が見つからないときだけ、公式サイトから最新の LTS をダウンロードし、SHA256 を照合してから入れます（sudo・管理者権限は不要。`--config-only` / `-ConfigOnly` では省略）。プラグインのフック（caveman など）は Node.js 18 以上で動き、無いと何もせずに終了するためです。
+  - Linux・macOS: `~/.local/opt/node-<版>-<OS>` に展開し、`~/.local/opt/node` からリンクを張って、`node` / `npm` / `npx` / `corepack` のリンクを `~/.local/bin` に置きます。64bit（x86_64 / arm64）のみ対応です。18 未満の `node`（apt で入れたものなど）があっても入れ、`~/.local/bin` が PATH の先頭にあるのでこちらが優先されます。
+  - Windows: `~\.local\opt\node-<版>-<OS>` に展開し、ジャンクション `~\.local\opt\node` をユーザーの PATH に追加します（新しいターミナルから有効）。
+    - 公式インストーラー（MSI）や winget で入れた Node.js は、ターミナルを開き直す前でも検出して、そのまま使います（システム / ユーザーの PATH と `C:\Program Files\nodejs` を確認）。
+    - 見つかった `node` が 18 未満なら、警告だけ出して入れません。システムの PATH はユーザーの PATH より優先されるので、別に入れても使われないためです。インストーラーか `winget upgrade OpenJS.NodeJS.LTS` で更新してから再実行してください。
+    - このスクリプトで入れた後に公式インストーラーで入れた場合は、そちらが優先されます。不要になった `~\.local\opt\node*` とユーザーの PATH の項目は手で削除してください。
+  - 更新は自動ではしません。新しい版に上げるときは、次のリンクを消してから再実行してください（古い版のフォルダは手で削除）。
+    - Linux・macOS: `rm -f ~/.local/opt/node ~/.local/bin/node ~/.local/bin/npm ~/.local/bin/npx ~/.local/bin/corepack`
+    - Windows: `cmd /c rmdir "%USERPROFILE%\.local\opt\node"`（ジャンクションだけを消します。`Remove-Item -Recurse` はリンク先の中身まで消すので使わないでください）
 - `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。
 - `CLAUDE.md` と agents は、内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。
 - `--config-only` / `-ConfigOnly` では、配置先の `agents/*.md` のうちリポジトリに無いものをすべて削除してから上書きします（`/agents` で自分で作ったエージェントも消えるので注意）。`.md` 以外のファイルには触りません。
