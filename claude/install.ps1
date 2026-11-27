@@ -5,7 +5,9 @@
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # show usage
 # - Node.js 18+ (needed by plugin hooks): latest LTS into ~\.local\opt only if no node is found (including an
 #   MSI / winget install); an older node only warns. Skipped with -ConfigOnly.
-# - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with -ConfigOnly.
+# - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
+#   skipped with -ConfigOnly. npm packages go to ~\.local\opt\npm-global (no admin); clangd uses winget LLVM.LLVM.
+# - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with -ConfigOnly.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
 #   A full install deletes only the listed obsolete agents (renamed or removed).
@@ -20,8 +22,8 @@ if ($Help) {
     @'
 Usage: powershell -ExecutionPolicy Bypass -File .\install.ps1 [-ConfigOnly] [-Help]
 
-  (no option)  install the CLI, Node.js and plugins (only if not installed) + place config in ~\.claude
-  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js and plugin install
+  (no option)  install the CLI, Node.js, language servers and plugins (only if not installed) + place config in ~\.claude
+  -ConfigOnly  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js, language server and plugin install
   -Help        show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~\.claude)
@@ -167,11 +169,88 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
         }
     }
 
+    Write-Host "== Language servers (for LSP plugins) =="
+    # Install the language servers that the LSP plugins run, only if not found. Failures only warn.
+    # - pyright-langserver / typescript-language-server: npm global install into ~\.local\opt\npm-global
+    #   (no admin), which is added to the user PATH
+    # - clangd: winget LLVM.LLVM (may ask for admin); C:\Program Files\LLVM\bin is added to the user PATH
+    $npmPrefix = Join-Path $optDir 'npm-global'
+    $pkgs = @()
+    foreach ($s in @(@{ Cmd = 'pyright-langserver'; Pkgs = @('pyright') },
+                     @{ Cmd = 'typescript-language-server'; Pkgs = @('typescript-language-server', 'typescript') })) {
+        if ((Get-Command $s.Cmd -ErrorAction SilentlyContinue) -or
+            (Test-Path -LiteralPath (Join-Path $npmPrefix "$($s.Cmd).cmd") -PathType Leaf)) {
+            Write-Host "already installed: $($s.Cmd)"
+        } else {
+            $pkgs += $s.Pkgs
+        }
+    }
+    if ($pkgs) {
+        # npm.cmd runs the node.exe next to it, so it also works when node is not on this session's PATH
+        $npm = (Get-Command npm.cmd -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1).Path
+        foreach ($dir in @($(if ($nodeExe) { Split-Path $nodeExe }), $nodeHome)) {
+            if ($npm -or -not $dir) { continue }
+            $c = Join-Path $dir 'npm.cmd'
+            if (Test-Path -LiteralPath $c -PathType Leaf) { $npm = $c }
+        }
+        if (-not $npm) {
+            Write-Warning "npm not found; skipping $($pkgs -join ' ') (install Node.js and re-run)."
+        } else {
+            try {
+                & $npm install -g --prefix $npmPrefix @pkgs
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "installed: $($pkgs -join ' ')  ($npmPrefix)"
+                } else {
+                    Write-Warning "failed to install: $($pkgs -join ' ')"
+                }
+            } catch {
+                Write-Warning "failed to install $($pkgs -join ' '): $($_.Exception.Message)"
+            }
+        }
+    }
+    # Also restores the PATH entry if the servers were installed here earlier
+    if (Test-Path -LiteralPath $npmPrefix -PathType Container) {
+        try { Add-UserPath $npmPrefix } catch { Write-Warning "failed to add $npmPrefix to the user PATH: $($_.Exception.Message)" }
+    }
+
+    $llvmBin = Join-Path $env:ProgramFiles 'LLVM\bin'
+    $clangdExe = Join-Path $llvmBin 'clangd.exe'
+    if (Get-Command clangd -ErrorAction SilentlyContinue) {
+        Write-Host "already installed: clangd"
+    } else {
+        if (-not (Test-Path -LiteralPath $clangdExe -PathType Leaf)) {
+            if (Get-Command winget -ErrorAction SilentlyContinue) {
+                try {
+                    winget install --id LLVM.LLVM -e --accept-source-agreements --accept-package-agreements
+                    if ($LASTEXITCODE -ne 0) { Write-Warning "failed to install LLVM (clangd) with winget." }
+                } catch {
+                    Write-Warning "failed to install LLVM (clangd) with winget: $($_.Exception.Message)"
+                }
+            } else {
+                Write-Warning "winget not found; install LLVM manually: https://github.com/llvm/llvm-project/releases"
+            }
+        }
+        # The LLVM installer does not add itself to PATH by default
+        if (Test-Path -LiteralPath $clangdExe -PathType Leaf) {
+            try {
+                Add-UserPath $llvmBin
+                Write-Host "installed: clangd  ($clangdExe)"
+            } catch {
+                Write-Warning "failed to add $llvmBin to the user PATH: $($_.Exception.Message)"
+            }
+        }
+    }
+
     Write-Host "== Claude Code (plugins) =="
     # Plugins to install: <plugin>@<marketplace> = <marketplace source>
     $plugins = [ordered]@{
         'caveman@caveman'                     = 'JuliusBrussee/caveman'
         'superpowers@claude-plugins-official' = 'anthropics/claude-plugins-official'
+        'context7@claude-plugins-official'    = 'anthropics/claude-plugins-official'
+        # LSP plugins: each needs its language server on PATH (pyright-langserver / clangd / typescript-language-server)
+        'pyright-lsp@claude-plugins-official'    = 'anthropics/claude-plugins-official'
+        'clangd-lsp@claude-plugins-official'     = 'anthropics/claude-plugins-official'
+        'typescript-lsp@claude-plugins-official' = 'anthropics/claude-plugins-official'
     }
     $claudeBin = (Get-Command claude -ErrorAction SilentlyContinue).Source
     if (-not $claudeBin -and (Test-Path $local)) { $claudeBin = $local }

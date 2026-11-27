@@ -9,7 +9,9 @@ source ../common/lib.sh
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents / settings.json) only
 #   ./install.sh --help         # show usage
 # - Node.js 18+ (needed by plugin hooks): latest LTS into ~/.local/opt unless node 18+ exists; skipped with --config-only.
-# - Plugins (caveman, superpowers): installed in user scope only if not installed; skipped with --config-only.
+# - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
+#   skipped with --config-only. npm packages go to ~/.local (no sudo); clangd uses apt (sudo) or Homebrew llvm on macOS.
+# - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with --config-only.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
 #   A full install deletes only the listed obsolete agents (renamed or removed).
@@ -21,8 +23,8 @@ usage() {
     cat <<'USAGE'
 Usage: ./install.sh [--config-only] [-h|--help]
 
-  (no option)    install the CLI, Node.js and plugins (only if not installed) + place config in ~/.claude
-  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js and plugin install
+  (no option)    install the CLI, Node.js, language servers and plugins (only if not installed) + place config in ~/.claude
+  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js, language server and plugin install
   -h, --help     show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~/.claude)
@@ -179,10 +181,71 @@ install_node() {
     echo "installed: node $ver  ($opt_dir/node-$ver-$platform)"
 }
 
+# lsp_has <command>: true if <command> is on PATH or in ~/.local/bin (which may not be on PATH yet)
+lsp_has() {
+    command -v "$1" >/dev/null 2>&1 || [ -x "$HOME/.local/bin/$1" ]
+}
+
+# install_lsp_servers
+#   Install the language servers that the LSP plugins run, only if not found. Failures only warn.
+#   - pyright-langserver / typescript-language-server: npm global install with --prefix ~/.local
+#     (no sudo even with a system node; commands land in ~/.local/bin, which is on PATH)
+#   - clangd: apt (Debian / Ubuntu / Raspberry Pi OS; needs sudo), or Homebrew llvm on macOS
+#     (llvm is keg-only, so clangd is linked into ~/.local/bin)
+install_lsp_servers() {
+    echo "== Language servers (for LSP plugins) =="
+    local bin_dir="$HOME/.local/bin" npm_cmd llvm_prefix entry cmd pkgs
+    # ~/.local/bin first in PATH for both lookup and run, so the npm and node installed by install_node
+    # are used together (not an older system npm with the newer node)
+    npm_cmd="$(PATH="$bin_dir:$PATH" command -v npm 2>/dev/null || true)"
+    # "<command> <npm packages...>"; one npm call per server, so one failure does not block the other.
+    # Note: the typescript package also puts tsc / tsserver into ~/.local/bin.
+    for entry in "pyright-langserver pyright" \
+                 "typescript-language-server typescript-language-server typescript"; do
+        cmd="${entry%% *}"
+        pkgs="${entry#* }"
+        if lsp_has "$cmd"; then
+            echo "already installed: $cmd"
+        elif [ -z "$npm_cmd" ]; then
+            echo "[WARN] npm not found; skipping $pkgs (install Node.js and re-run)." >&2
+        # $pkgs is unquoted on purpose: it is a fixed, space-separated package list
+        # shellcheck disable=SC2086
+        elif PATH="$bin_dir:$PATH" "$npm_cmd" install -g --prefix "$HOME/.local" $pkgs; then
+            echo "installed: $pkgs  ($bin_dir)"
+        else
+            echo "[WARN] failed to install: $pkgs" >&2
+        fi
+    done
+
+    if lsp_has clangd; then
+        echo "already installed: clangd"
+    elif command -v apt-get >/dev/null 2>&1; then
+        if sudo apt-get update && sudo apt-get install -y clangd; then
+            echo "installed: clangd"
+        else
+            echo "[WARN] failed to install clangd with apt." >&2
+        fi
+    elif [ "$(uname -s)" = Darwin ] && command -v brew >/dev/null 2>&1; then
+        if brew install llvm && llvm_prefix="$(brew --prefix llvm)" && [ -x "$llvm_prefix/bin/clangd" ] \
+            && mkdir -p "$bin_dir" && ln -sfn "$llvm_prefix/bin/clangd" "$bin_dir/clangd"; then
+            echo "installed: clangd  ($bin_dir/clangd -> $llvm_prefix/bin/clangd)"
+        else
+            echo "[WARN] failed to install clangd with Homebrew (llvm)." >&2
+        fi
+    else
+        echo "[WARN] no supported package manager (apt / Homebrew); install clangd manually: https://clangd.llvm.org/installation" >&2
+    fi
+}
+
 # Plugins to install, as "<plugin>@<marketplace> <marketplace source>"
 PLUGINS=(
     "caveman@caveman JuliusBrussee/caveman"
     "superpowers@claude-plugins-official anthropics/claude-plugins-official"
+    "context7@claude-plugins-official anthropics/claude-plugins-official"
+    # LSP plugins: each needs its language server on PATH (pyright-langserver / clangd / typescript-language-server)
+    "pyright-lsp@claude-plugins-official anthropics/claude-plugins-official"
+    "clangd-lsp@claude-plugins-official anthropics/claude-plugins-official"
+    "typescript-lsp@claude-plugins-official anthropics/claude-plugins-official"
 )
 
 install_plugins() {
@@ -298,6 +361,7 @@ install_config() {
 if [ "$config_only" -eq 0 ]; then
     install_cli
     install_node
+    install_lsp_servers
     install_plugins
 fi
 install_config

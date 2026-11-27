@@ -15,7 +15,7 @@ Claude Code の **CLI 本体のインストール**と、グローバル設定 (
 | `agents/worker.md` | 同上 | 定型作業担当 (Haiku) |
 | `agents/researcher.md` | 同上 | Web 調査担当 (Sonnet、Web 検索・取得のみ) |
 | `agents/debugger.md` | 同上 | 原因調査担当 (Opus、修正はしない) |
-| `install.sh` / `install.ps1` | - | CLI 本体・Node.js・プラグインのインストール + PATH 設定 + 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
+| `install.sh` / `install.ps1` | - | CLI 本体・Node.js・言語サーバー・プラグインのインストール + PATH 設定 + 上記を `~/.claude` にコピー (Linux・macOS・Raspberry Pi / Windows) |
 
 ## インストール
 ```bash
@@ -38,6 +38,9 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプ�
   - 更新は自動ではしません。新しい版に上げるときは、次のリンクを消してから再実行してください（古い版のフォルダは手で削除）。
     - Linux・macOS: `rm -f ~/.local/opt/node ~/.local/bin/node ~/.local/bin/npm ~/.local/bin/npx ~/.local/bin/corepack`
     - Windows: `cmd /c rmdir "%USERPROFILE%\.local\opt\node"`（ジャンクションだけを消します。`Remove-Item -Recurse` はリンク先の中身まで消すので使わないでください）
+- LSP プラグイン（`pyright-lsp` / `typescript-lsp` / `clangd-lsp`）が使う言語サーバーを、コマンドが見つからないときだけ入れます（`--config-only` / `-ConfigOnly` では省略。失敗しても警告だけで続行）。
+  - `pyright` と `typescript-language-server` + `typescript` は npm で入れます。Linux・macOS は `--prefix ~/.local`（コマンドは `~/.local/bin`、sudo 不要）、Windows は `~\.local\opt\npm-global`（ユーザーの PATH に追加、管理者権限不要）です。`typescript` パッケージにより `tsc` / `tsserver` も同じ場所に入ります（Linux・macOS では `~/.local/bin` が PATH の先頭なので、別に入れた `tsc` より優先されます）。
+  - `clangd` は、Linux（apt がある環境）では `sudo apt-get install clangd`、macOS では Homebrew の `llvm` を入れて `~/.local/bin/clangd` にリンクします（`llvm` は 1GB 超）。Windows では `winget install LLVM.LLVM`（管理者権限を求められることがあります）を実行し、`C:\Program Files\LLVM\bin` をユーザーの PATH に追加します。apt / Homebrew が無い環境は手動で入れてください。
 - `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。
 - `CLAUDE.md` と agents は、内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。
 - `--config-only` / `-ConfigOnly` では、配置先の `agents/*.md` のうちリポジトリに無いものをすべて削除してから上書きします（`/agents` で自分で作ったエージェントも消えるので注意）。`.md` 以外のファイルには触りません。
