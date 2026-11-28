@@ -3,13 +3,14 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ../common/lib.sh
 
-# Install Claude Code (CLI + Node.js + plugins + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
+# Install Claude Code (CLI + Node.js + Bun + plugins + CLAUDE.md / agents / settings.json) (Linux / macOS / Raspberry Pi)
 # Usage:
 #   ./install.sh                # install the CLI, Node.js and plugins (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents / settings.json) only
 #   ./install.sh --help         # show usage
 # - Node.js 22+ (needed by plugin hooks and typescript-language-server): latest LTS into ~/.local/opt unless node 22+ exists;
 #   skipped with --config-only.
+# - Bun: official installer into ~/.local (bin: ~/.local/bin/bun) only if not installed; skipped with --config-only.
 # - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
 #   skipped with --config-only. npm packages go to ~/.local (no sudo); clangd uses apt (sudo) or Homebrew llvm on macOS.
 # - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with --config-only.
@@ -24,8 +25,8 @@ usage() {
     cat <<'USAGE'
 Usage: ./install.sh [--config-only] [-h|--help]
 
-  (no option)    install the CLI, Node.js, language servers and plugins (only if not installed) + place config in ~/.claude
-  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js, language server and plugin install
+  (no option)    install the CLI, Node.js, Bun, language servers and plugins (only if not installed) + place config in ~/.claude
+  --config-only  place config (CLAUDE.md / agents / settings.json) only; skip the CLI, Node.js, Bun, language server and plugin install
   -h, --help     show this help
 
 Env: CLAUDE_CONFIG_DIR overrides the destination (default: ~/.claude)
@@ -181,6 +182,24 @@ install_node() {
         fi
     done
     echo "installed: node $ver  ($opt_dir/node-$ver-$platform)"
+}
+
+# install_bun
+#   Install Bun with the official installer into ~/.local (binary: ~/.local/bin/bun, no sudo), only if not found.
+#   Failures only warn, so the rest of the install continues.
+install_bun() {
+    echo "== Bun =="
+    if command -v bun >/dev/null 2>&1 || [ -x "$HOME/.local/bin/bun" ] || [ -x "$HOME/.bun/bin/bun" ]; then
+        echo "already installed: bun"
+        return 0
+    fi
+    if ! command -v unzip >/dev/null 2>&1; then
+        echo "[WARN] unzip not found (required by the Bun installer); skipping Bun install." >&2
+        return 0
+    fi
+    if ! curl -fsSL https://bun.sh/install | BUN_INSTALL="$HOME/.local" bash; then
+        echo "[WARN] failed to install Bun" >&2
+    fi
 }
 
 # lsp_has <command>: true if <command> is on PATH or in ~/.local/bin (which may not be on PATH yet)
@@ -364,6 +383,7 @@ install_config() {
 if [ "$config_only" -eq 0 ]; then
     install_cli
     install_node
+    install_bun
     install_lsp_servers
     install_plugins
 fi
