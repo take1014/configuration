@@ -3,8 +3,8 @@
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1                # CLI, Node.js and plugins (only if not installed) + config
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # config files only
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # show usage
-# - Node.js 18+ (needed by plugin hooks): latest LTS into ~\.local\opt only if no node is found (including an
-#   MSI / winget install); an older node only warns. Skipped with -ConfigOnly.
+# - Node.js 22+ (needed by plugin hooks and typescript-language-server): latest LTS into ~\.local\opt only if
+#   no node is found (including an MSI / winget install); an older node only warns. Skipped with -ConfigOnly.
 # - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
 #   skipped with -ConfigOnly. npm packages go to ~\.local\opt\npm-global (no admin); clangd uses winget LLVM.LLVM.
 # - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with -ConfigOnly.
@@ -42,14 +42,15 @@ if (-not $ConfigOnly) {
         irm https://claude.ai/install.ps1 | iex
     }
 
-    Write-Host "== Node.js (for plugin hooks) =="
+    Write-Host "== Node.js (for plugin hooks and LSP servers) =="
     # Plugin hooks (e.g. caveman) run with node and silently do nothing without it; they need Node.js 18+.
+    # typescript-language-server (for the typescript-lsp plugin) needs Node.js 22+ (6.1.0: >=22.22.2).
     # An existing node is reused, including one from the official installer (MSI) or winget that is only
     # on the persisted PATH because this terminal was opened before it was installed.
     # Otherwise install the latest LTS zip from nodejs.org into ~\.local\opt (no admin).
     # Layout: ~\.local\opt\node-<ver>-<platform>, junction ~\.local\opt\node (added to the user PATH).
     # Failures only warn, so the rest of the install continues.
-    $nodeMinMajor = 18
+    $nodeMinMajor = 22
     $optDir = Join-Path $HOME '.local\opt'
     $nodeHome = Join-Path $optDir 'node'
 
@@ -108,8 +109,8 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
             # Not replaced automatically: a machine-wide node (MSI) comes before the user PATH,
             # so another copy under ~\.local\opt would not take effect.
             Write-Warning ("node $(if ($nodeVer) { $nodeVer } else { '(unknown version)' }) at $nodeExe is older than " +
-                "v$nodeMinMajor, which plugin hooks need. Upgrade it (e.g. 'winget upgrade OpenJS.NodeJS.LTS' " +
-                "or the installer from nodejs.org) and re-run.")
+                "v$nodeMinMajor, which plugin hooks and typescript-language-server need. " +
+                "Upgrade it (e.g. 'winget upgrade OpenJS.NodeJS.LTS' or the installer from nodejs.org) and re-run.")
         }
     } elseif (Test-Path -LiteralPath (Join-Path $nodeHome 'node.exe') -PathType Leaf) {
         # Installed by this script earlier, but its user PATH entry is gone: restore it
@@ -176,8 +177,9 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
     # - clangd: winget LLVM.LLVM (may ask for admin); C:\Program Files\LLVM\bin is added to the user PATH
     $npmPrefix = Join-Path $optDir 'npm-global'
     $pkgs = @()
+    # typescript is pinned to 6: TypeScript 7 (native port) ships no tsserver.js, which typescript-language-server needs.
     foreach ($s in @(@{ Cmd = 'pyright-langserver'; Pkgs = @('pyright') },
-                     @{ Cmd = 'typescript-language-server'; Pkgs = @('typescript-language-server', 'typescript') })) {
+                     @{ Cmd = 'typescript-language-server'; Pkgs = @('typescript-language-server', 'typescript@6') })) {
         if ((Get-Command $s.Cmd -ErrorAction SilentlyContinue) -or
             (Test-Path -LiteralPath (Join-Path $npmPrefix "$($s.Cmd).cmd") -PathType Leaf)) {
             Write-Host "already installed: $($s.Cmd)"

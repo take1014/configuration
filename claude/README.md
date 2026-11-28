@@ -29,17 +29,17 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigOnly    # 設定�
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -Help          # オプションの一覧
 ```
 - CLI は未導入のときだけインストールします（導入済みなら更新は `claude update`）。64bit OS が必要で、32bit の Raspberry Pi OS では CLI をスキップし設定だけ配置します。
-- Node.js 18 以上が見つからないときだけ、公式サイトから最新の LTS をダウンロードし、SHA256 を照合してから入れます（sudo・管理者権限は不要。`--config-only` / `-ConfigOnly` では省略）。プラグインのフック（caveman など）は Node.js 18 以上で動き、無いと何もせずに終了するためです。
-  - Linux・macOS: `~/.local/opt/node-<版>-<OS>` に展開し、`~/.local/opt/node` からリンクを張って、`node` / `npm` / `npx` / `corepack` のリンクを `~/.local/bin` に置きます。64bit（x86_64 / arm64）のみ対応です。18 未満の `node`（apt で入れたものなど）があっても入れ、`~/.local/bin` が PATH の先頭にあるのでこちらが優先されます。
+- Node.js 22 以上が見つからないときだけ、公式サイトから最新の LTS をダウンロードし、SHA256 を照合してから入れます（sudo・管理者権限は不要。`--config-only` / `-ConfigOnly` では省略）。プラグインのフック（caveman など）は Node.js 18 以上で動き、無いと何もせずに終了するため、また typescript-language-server（6.1.0）が Node.js 22 以上を要求するためです。
+  - Linux・macOS: `~/.local/opt/node-<版>-<OS>` に展開し、`~/.local/opt/node` からリンクを張って、`node` / `npm` / `npx` / `corepack` のリンクを `~/.local/bin` に置きます。64bit（x86_64 / arm64）のみ対応です。22 未満の `node`（apt で入れたものなど）があっても入れ、`~/.local/bin` が PATH の先頭にあるのでこちらが優先されます。
   - Windows: `~\.local\opt\node-<版>-<OS>` に展開し、ジャンクション `~\.local\opt\node` をユーザーの PATH に追加します（新しいターミナルから有効）。
     - 公式インストーラー（MSI）や winget で入れた Node.js は、ターミナルを開き直す前でも検出して、そのまま使います（システム / ユーザーの PATH と `C:\Program Files\nodejs` を確認）。
-    - 見つかった `node` が 18 未満なら、警告だけ出して入れません。システムの PATH はユーザーの PATH より優先されるので、別に入れても使われないためです。インストーラーか `winget upgrade OpenJS.NodeJS.LTS` で更新してから再実行してください。
+    - 見つかった `node` が 22 未満なら、警告だけ出して入れません。システムの PATH はユーザーの PATH より優先されるので、別に入れても使われないためです。インストーラーか `winget upgrade OpenJS.NodeJS.LTS` で更新してから再実行してください。
     - このスクリプトで入れた後に公式インストーラーで入れた場合は、そちらが優先されます。不要になった `~\.local\opt\node*` とユーザーの PATH の項目は手で削除してください。
   - 更新は自動ではしません。新しい版に上げるときは、次のリンクを消してから再実行してください（古い版のフォルダは手で削除）。
     - Linux・macOS: `rm -f ~/.local/opt/node ~/.local/bin/node ~/.local/bin/npm ~/.local/bin/npx ~/.local/bin/corepack`
     - Windows: `cmd /c rmdir "%USERPROFILE%\.local\opt\node"`（ジャンクションだけを消します。`Remove-Item -Recurse` はリンク先の中身まで消すので使わないでください）
 - LSP プラグイン（`pyright-lsp` / `typescript-lsp` / `clangd-lsp`）が使う言語サーバーを、コマンドが見つからないときだけ入れます（`--config-only` / `-ConfigOnly` では省略。失敗しても警告だけで続行）。
-  - `pyright` と `typescript-language-server` + `typescript` は npm で入れます。Linux・macOS は `--prefix ~/.local`（コマンドは `~/.local/bin`、sudo 不要）、Windows は `~\.local\opt\npm-global`（ユーザーの PATH に追加、管理者権限不要）です。`typescript` パッケージにより `tsc` / `tsserver` も同じ場所に入ります（Linux・macOS では `~/.local/bin` が PATH の先頭なので、別に入れた `tsc` より優先されます）。
+  - `pyright` と `typescript-language-server` + `typescript@6` は npm で入れます（TypeScript 7 には typescript-language-server が使う `tsserver.js` が無いため 6 に固定）。Linux・macOS は `--prefix ~/.local`（コマンドは `~/.local/bin`、sudo 不要）、Windows は `~\.local\opt\npm-global`（ユーザーの PATH に追加、管理者権限不要）です。`typescript` パッケージにより `tsc` / `tsserver` も同じ場所に入ります（Linux・macOS では `~/.local/bin` が PATH の先頭なので、別に入れた `tsc` より優先されます）。
   - `clangd` は、Linux（apt がある環境）では `sudo apt-get install clangd`、macOS では Homebrew の `llvm` を入れて `~/.local/bin/clangd` にリンクします（`llvm` は 1GB 超）。Windows では `winget install LLVM.LLVM`（管理者権限を求められることがあります）を実行し、`C:\Program Files\LLVM\bin` をユーザーの PATH に追加します。apt / Homebrew が無い環境は手動で入れてください。
 - `~/.local/bin` が PATH に無ければ、`~/.bashrc`（Linux では常に、macOS ではファイルがある場合のみ）と、`~/.zshrc`（zsh が入っているか、ファイルがある場合）に追記します。
 - `CLAUDE.md` と agents は、内容が同じなら何もしません。違う場合は上書きします（バックアップは作りません）。

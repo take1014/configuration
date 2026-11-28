@@ -8,7 +8,8 @@ source ../common/lib.sh
 #   ./install.sh                # install the CLI, Node.js and plugins (only if not installed) + place config in ~/.claude
 #   ./install.sh --config-only  # place config (CLAUDE.md / agents / settings.json) only
 #   ./install.sh --help         # show usage
-# - Node.js 18+ (needed by plugin hooks): latest LTS into ~/.local/opt unless node 18+ exists; skipped with --config-only.
+# - Node.js 22+ (needed by plugin hooks and typescript-language-server): latest LTS into ~/.local/opt unless node 22+ exists;
+#   skipped with --config-only.
 # - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
 #   skipped with --config-only. npm packages go to ~/.local (no sudo); clangd uses apt (sudo) or Homebrew llvm on macOS.
 # - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with --config-only.
@@ -81,14 +82,15 @@ install_cli() {
 }
 
 # install_node
-#   Install the latest Node.js LTS from nodejs.org into ~/.local/opt (no sudo), unless node 18+ exists.
+#   Install the latest Node.js LTS from nodejs.org into ~/.local/opt (no sudo), unless node 22+ exists.
 #   Plugin hooks (e.g. caveman) run with node and silently do nothing without it; they need Node.js 18+.
+#   typescript-language-server (for the typescript-lsp plugin) needs Node.js 22+ (6.1.0: >=22.22.2).
 #   An older node (e.g. from apt on Raspberry Pi OS) is left as is; ~/.local/bin comes first in PATH.
 #   Layout: ~/.local/opt/node-<ver>-<platform>, linked as ~/.local/opt/node; bin links in ~/.local/bin.
 #   Failures only warn, so the rest of the install continues.
-NODE_MIN_MAJOR=18
+NODE_MIN_MAJOR=22
 install_node() {
-    echo "== Node.js (for plugin hooks) =="
+    echo "== Node.js (for plugin hooks and LSP servers) =="
     local bin_dir="$HOME/.local/bin" opt_dir="$HOME/.local/opt" os arch platform ver file tmp sum b
     local node_cmd node_ver node_major
     node_cmd="$(command -v node 2>/dev/null || true)"
@@ -104,7 +106,7 @@ install_node() {
             return 0
         fi
         echo "[WARN] node ${node_ver:-(unknown version)} at $node_cmd is older than v$NODE_MIN_MAJOR," \
-            "which plugin hooks need; installing the LTS into $opt_dir." >&2
+            "which plugin hooks and typescript-language-server need; installing the LTS into $opt_dir." >&2
     fi
     case "$(uname -s)" in
         Linux)  os=linux ;;
@@ -200,8 +202,9 @@ install_lsp_servers() {
     npm_cmd="$(PATH="$bin_dir:$PATH" command -v npm 2>/dev/null || true)"
     # "<command> <npm packages...>"; one npm call per server, so one failure does not block the other.
     # Note: the typescript package also puts tsc / tsserver into ~/.local/bin.
+    # typescript is pinned to 6: TypeScript 7 (native port) ships no tsserver.js, which typescript-language-server needs.
     for entry in "pyright-langserver pyright" \
-                 "typescript-language-server typescript-language-server typescript"; do
+                 "typescript-language-server typescript-language-server typescript@6"; do
         cmd="${entry%% *}"
         pkgs="${entry#* }"
         if lsp_has "$cmd"; then
