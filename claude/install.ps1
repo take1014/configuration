@@ -6,7 +6,8 @@
 # - Node.js 22+ (needed by plugin hooks and typescript-language-server): latest LTS into ~\.local\opt only if
 #   no node is found (including an MSI / winget install); an older node only warns. Skipped with -ConfigOnly.
 # - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
-#   skipped with -ConfigOnly. npm packages go to ~\.local\opt\npm-global (no admin); clangd uses winget LLVM.LLVM.
+#   skipped with -ConfigOnly. npm packages go to ~\.local\opt\npm-global (no admin); clangd uses winget LLVM.LLVM,
+#   or the clangd release zip into ~\.local\opt (no admin) when winget is missing or fails.
 # - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with -ConfigOnly.
 # - Config files: do nothing if identical; otherwise overwrite (no backup).
 # - Config-only mode mirrors agents/: agent .md files not in this repository are deleted.
@@ -175,6 +176,7 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
     # - pyright-langserver / typescript-language-server: npm global install into ~\.local\opt\npm-global
     #   (no admin), which is added to the user PATH
     # - clangd: winget LLVM.LLVM (may ask for admin); C:\Program Files\LLVM\bin is added to the user PATH
+    #   (or, without winget / when it fails, the clangd zip from GitHub into ~\.local\opt\clangd_<ver>, no admin)
     $npmPrefix = Join-Path $optDir 'npm-global'
     $pkgs = @()
     # typescript is pinned to 6: TypeScript 7 (native port) ships no tsserver.js, which typescript-language-server needs.
@@ -217,28 +219,77 @@ public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wP
 
     $llvmBin = Join-Path $env:ProgramFiles 'LLVM\bin'
     $clangdExe = Join-Path $llvmBin 'clangd.exe'
+    $clangdHome = Join-Path $optDir 'clangd'
+    $clangdHomeBin = Join-Path $clangdHome 'bin'
     if (Get-Command clangd -ErrorAction SilentlyContinue) {
         Write-Host "already installed: clangd"
+    } elseif (Test-Path -LiteralPath (Join-Path $clangdHomeBin 'clangd.exe') -PathType Leaf) {
+        # Installed from the zip by this script earlier, but its user PATH entry is gone: restore it
+        try {
+            Add-UserPath $clangdHomeBin
+            Write-Host "already installed: clangd  ($clangdHomeBin)"
+        } catch {
+            Write-Warning "failed to add $clangdHomeBin to the user PATH: $($_.Exception.Message)"
+        }
     } else {
         if (-not (Test-Path -LiteralPath $clangdExe -PathType Leaf)) {
             if (Get-Command winget -ErrorAction SilentlyContinue) {
                 try {
                     winget install --id LLVM.LLVM -e --accept-source-agreements --accept-package-agreements
-                    if ($LASTEXITCODE -ne 0) { Write-Warning "failed to install LLVM (clangd) with winget." }
+                    if ($LASTEXITCODE -ne 0) { Write-Warning "failed to install LLVM (clangd) with winget; trying the clangd zip." }
                 } catch {
-                    Write-Warning "failed to install LLVM (clangd) with winget: $($_.Exception.Message)"
+                    Write-Warning "failed to install LLVM (clangd) with winget: $($_.Exception.Message); trying the clangd zip."
                 }
             } else {
-                Write-Warning "winget not found; install LLVM manually: https://github.com/llvm/llvm-project/releases"
+                Write-Host "winget not found; trying the clangd zip."
             }
         }
-        # The LLVM installer does not add itself to PATH by default
         if (Test-Path -LiteralPath $clangdExe -PathType Leaf) {
+            # The LLVM installer does not add itself to PATH by default
             try {
                 Add-UserPath $llvmBin
                 Write-Host "installed: clangd  ($clangdExe)"
             } catch {
                 Write-Warning "failed to add $llvmBin to the user PATH: $($_.Exception.Message)"
+            }
+        } elseif ($env:PROCESSOR_ARCHITECTURE -ne 'AMD64') {
+            Write-Warning "no clangd zip for $($env:PROCESSOR_ARCHITECTURE); install clangd manually: https://clangd.llvm.org/installation"
+        } else {
+            # Fallback without winget or admin: the standalone clangd release zip from GitHub into ~\.local\opt.
+            # Layout: ~\.local\opt\clangd_<ver>, junction ~\.local\opt\clangd (its bin is added to the user PATH).
+            $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+            New-Item $tmp -ItemType Directory -Force | Out-Null
+            $savedProgress = $ProgressPreference
+            $ProgressPreference = 'SilentlyContinue'
+            try {
+                $release = Invoke-RestMethod https://api.github.com/repos/clangd/clangd/releases/latest -UseBasicParsing
+                $ver = $release.tag_name
+                $asset = $release.assets | Where-Object { $_.name -eq "clangd-windows-$ver.zip" } | Select-Object -First 1
+                if (-not $asset) { throw "clangd-windows-$ver.zip not found in the latest release" }
+                $zip = Join-Path $tmp $asset.name
+                Invoke-WebRequest $asset.browser_download_url -OutFile $zip -UseBasicParsing
+                # GitHub publishes each asset's SHA-256 as "sha256:<hex>"
+                $expected = "$($asset.digest)" -replace '^sha256:', ''
+                if ($expected -notmatch '^[0-9a-fA-F]{64}$' -or (Get-FileHash $zip -Algorithm SHA256).Hash -ine $expected) {
+                    throw "checksum mismatch for $($asset.name)"
+                }
+                New-Item $optDir -ItemType Directory -Force | Out-Null
+                Expand-Archive $zip -DestinationPath $optDir -Force
+                $name = "clangd_$ver"
+                if (-not (Test-Path -LiteralPath (Join-Path $optDir "$name\bin\clangd.exe") -PathType Leaf)) {
+                    throw "clangd.exe not found in $(Join-Path $optDir $name)"
+                }
+                # Junction (no admin needed) so the PATH entry survives version upgrades; see the Node.js step
+                $oldLink = Get-Item -LiteralPath $clangdHome -Force -ErrorAction SilentlyContinue
+                if ($oldLink) { $oldLink.Delete() }
+                New-Item $clangdHome -ItemType Junction -Value (Join-Path $optDir $name) | Out-Null
+                Add-UserPath $clangdHomeBin
+                Write-Host "installed: clangd $ver  ($(Join-Path $optDir $name))"
+            } catch {
+                Write-Warning "failed to install clangd from the zip: $($_.Exception.Message); install it manually: https://clangd.llvm.org/installation"
+            } finally {
+                $ProgressPreference = $savedProgress
+                Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
             }
         }
     }
