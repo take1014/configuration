@@ -10,7 +10,7 @@ source ../common/lib.sh
 #   ./install.sh --help         # show usage
 # - Node.js 22+ (needed by plugin hooks and typescript-language-server): latest LTS into ~/.local/opt unless node 22+ exists;
 #   skipped with --config-only.
-# - Bun: official installer into ~/.local (bin: ~/.local/bin/bun) only if not installed; skipped with --config-only.
+# - Bun: official installer into ~/.bun only if not installed, and ~/.bun/bin added to the login-shell files (~/.zprofile, ~/.bash_profile or ~/.profile); skipped with --config-only.
 # - Language servers for the LSP plugins (pyright, typescript-language-server, clangd): installed only if not on PATH;
 #   skipped with --config-only. npm packages go to ~/.local (no sudo); clangd uses apt (sudo) or Homebrew llvm on macOS.
 # - Plugins (caveman, superpowers, context7, pyright-lsp, clangd-lsp, typescript-lsp): installed in user scope only if not installed; skipped with --config-only.
@@ -185,21 +185,36 @@ install_node() {
 }
 
 # install_bun
-#   Install Bun with the official installer into ~/.local (binary: ~/.local/bin/bun, no sudo), only if not found.
-#   Failures only warn, so the rest of the install continues.
+#   Install Bun with the official installer into ~/.bun, only if not found. Failures only warn.
+#   Plugin processes start as login shells, which read ~/.zprofile / ~/.profile but not ~/.zshrc / ~/.bashrc,
+#   and the Bun installer only edits the latter. So add ~/.bun/bin to the login-shell files too (only if missing):
+#     zsh (macOS): ~/.zprofile; bash (Linux): ~/.bash_profile if it exists, otherwise ~/.profile
 install_bun() {
     echo "== Bun =="
-    if command -v bun >/dev/null 2>&1 || [ -x "$HOME/.local/bin/bun" ] || [ -x "$HOME/.bun/bin/bun" ]; then
+    if command -v bun >/dev/null 2>&1 || [ -x "$HOME/.bun/bin/bun" ]; then
         echo "already installed: bun"
-        return 0
-    fi
-    if ! command -v unzip >/dev/null 2>&1; then
+    elif ! command -v unzip >/dev/null 2>&1; then
         echo "[WARN] unzip not found (required by the Bun installer); skipping Bun install." >&2
         return 0
-    fi
-    if ! curl -fsSL https://bun.sh/install | BUN_INSTALL="$HOME/.local" bash; then
+    elif ! curl -fsSL https://bun.sh/install | bash; then
         echo "[WARN] failed to install Bun" >&2
+        return 0
     fi
+
+    local rc bash_login="$HOME/.profile"
+    [ -f "$HOME/.bash_profile" ] && bash_login="$HOME/.bash_profile"
+    for rc in "$HOME/.zprofile" "$bash_login"; do
+        case "$rc" in
+            */.zprofile) command -v zsh >/dev/null 2>&1 || [ -f "$rc" ] || continue ;;
+        esac
+        if ! grep -q 'BUN_INSTALL' "$rc" 2>/dev/null; then
+            {
+                echo 'export BUN_INSTALL="$HOME/.bun"'
+                echo 'export PATH="$BUN_INSTALL/bin:$PATH"'
+            } >> "$rc"
+            echo "updated: $rc  (PATH)"
+        fi
+    done
 }
 
 # lsp_has <command>: true if <command> is on PATH or in ~/.local/bin (which may not be on PATH yet)
